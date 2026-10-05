@@ -25,7 +25,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 
-const BACKEND_URL = api.defaults.baseURL?.replace(/\/api$/, '') || 'http://192.168.1.44:8083';
+const BACKEND_URL = api.defaults.baseURL?.replace(/\/api$/, '') || 'http://localhost:8083';
 
 // Animations fluides
 const containerVariants = {

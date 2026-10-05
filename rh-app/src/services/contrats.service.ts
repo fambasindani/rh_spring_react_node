@@ -22,14 +22,8 @@ export interface ContratPayload {
   statut: string;
 }
 
-export interface PageResponse<T> {
-  content: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
-  totalPages: number;
-  last: boolean;
-}
+import type { PageResponse } from '../types/pagination';
+export type { PageResponse };
 
 export const contratsService = {
   async getAll(page: number = 0, size: number = 10, keyword: string = ''): Promise<PageResponse<Contrat>> {

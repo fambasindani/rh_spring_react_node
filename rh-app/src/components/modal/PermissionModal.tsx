@@ -24,7 +24,7 @@ interface PermissionModalProps {
   } | null;
 }
 
-interface FormData {
+interface PermissionFormData {
   idAgent: number | null;
   datePermission: string;
   heureSortie: string;
@@ -34,7 +34,7 @@ interface FormData {
 }
 
 const PermissionModal: React.FC<PermissionModalProps> = ({ isOpen, onClose, onSave, permission }) => {
-  const [form, setForm] = useState<FormData>({
+  const [form, setForm] = useState<PermissionFormData>({
     idAgent: permission?.idAgent || null,
     datePermission: permission?.datePermission || '',
     heureSortie: permission?.heureSortie || '',
@@ -86,7 +86,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({ isOpen, onClose, onSa
     searchAgents(inputValue);
   };
 
-  const handleChange = (field: keyof FormData, value: any) => {
+  const handleChange = (field: keyof PermissionFormData, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
     if (fieldErrors[field]) {
       setFieldErrors(prev => {

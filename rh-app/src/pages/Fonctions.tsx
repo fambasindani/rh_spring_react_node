@@ -10,14 +10,7 @@ import Toast from '../components/Toast';
 import { FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
 import { TableSkeleton } from '../components/ui/Skeleton';
 
-interface PageResponse<T> {
-  content: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalPages: number;
-  totalElements: number;
-  last: boolean;
-}
+import type { PageResponse } from '../types/pagination';
 
 const Fonctions: React.FC = () => {
   const [fonctions, setFonctions] = useState<Fonction[]>([]);

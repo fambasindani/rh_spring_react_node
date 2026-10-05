@@ -13,8 +13,13 @@ export interface Affectation {
   directionNom: string;
 }
 
-// Payload utilisé par le formulaire (peut être identique à l'interface)
-export type AffectationPayload = Omit<Affectation, 'id'> & { id?: number };
+// Payload attendu par le backend (AffectationRequest : snake_case)
+export interface AffectationPayload {
+  id_agent: number;
+  id_direction: number;
+  date_debut: string;
+  date_fin: string | null;
+}
 
 export const affectationService = {
   // Créer une affectation

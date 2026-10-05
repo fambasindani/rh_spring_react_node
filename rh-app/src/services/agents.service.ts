@@ -32,14 +32,8 @@ interface RawAgent {
 }
 
 // Réponse paginée (identique à celle du backend Spring Data)
-export interface PageResponse<T> {
-  content: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
-  totalPages: number;
-  last: boolean;
-}
+import type { PageResponse } from '../types/pagination';
+export type { PageResponse };
 
 export const agentService = {
   // Récupérer tous les agents (sans pagination)

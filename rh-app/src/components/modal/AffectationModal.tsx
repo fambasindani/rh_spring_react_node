@@ -15,12 +15,8 @@ export interface AffectationDto {
   dateFin: string | null;
 }
 
-export interface AffectationPayload {
-  id_agent: number;
-  id_direction: number;
-  date_debut: string;
-  date_fin: string | null;
-}
+import type { AffectationPayload } from '../../services/affectation.service';
+export type { AffectationPayload };
 
 interface AffectationModalProps {
   isOpen: boolean;

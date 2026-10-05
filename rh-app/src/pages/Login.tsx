@@ -80,6 +80,8 @@ const Login: React.FC = () => {
               <Input
                 label="Adresse email"
                 type="email"
+                name="email"
+                autoComplete="username"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -98,6 +100,8 @@ const Login: React.FC = () => {
               <Input
                 label="Mot de passe"
                 type="password"
+                name="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);

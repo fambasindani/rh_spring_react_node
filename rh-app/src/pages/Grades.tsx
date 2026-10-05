@@ -12,14 +12,7 @@ import { FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
 import { TableSkeleton } from '../components/ui/Skeleton';
 
 // Type pagination (identique à ce que renvoie Spring)
-interface PageResponse<T> {
-  content: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalPages: number;
-  totalElements: number;
-  last: boolean;
-}
+import type { PageResponse } from '../types/pagination';
 
 const Grades: React.FC = () => {
   const [grades, setGrades] = useState<GradeResponse[]>([]);

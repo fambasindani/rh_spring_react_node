@@ -14,7 +14,14 @@ export interface Promotion {
   gradeNom: string;
 }
 
-export type PromotionPayload = Omit<Promotion, 'id'> & { id?: number };
+// Payload attendu par le backend (PromotionRequest : camelCase)
+export interface PromotionPayload {
+  idAgent: number;
+  idGrade: number;
+  dateDebut: string;
+  dateFin: string | null;
+  reference: string;
+}
 
 const toBackend = (data: PromotionPayload) => ({
   idAgent: data.idAgent,

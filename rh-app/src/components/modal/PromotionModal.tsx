@@ -16,13 +16,8 @@ export interface PromotionDto {
   reference: string;
 }
 
-export interface PromotionPayload {
-  idAgent: number;
-  idGrade: number;
-  dateDebut: string;
-  dateFin: string | null;
-  reference: string;
-}
+import type { PromotionPayload } from '../../services/promotion.service';
+export type { PromotionPayload };
 
 type PromotionErrors = {
   idGrade?: string;

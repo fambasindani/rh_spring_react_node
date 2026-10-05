@@ -23,7 +23,7 @@ interface AbsenceModalProps {
   } | null;
 }
 
-interface FormData {
+interface AbsenceFormData {
   idAgent: number | null;
   dateDebut: string;
   dateFin: string;
@@ -33,7 +33,7 @@ interface FormData {
 }
 
 const AbsenceModal: React.FC<AbsenceModalProps> = ({ isOpen, onClose, onSave, absence }) => {
-  const [form, setForm] = useState<FormData>({
+  const [form, setForm] = useState<AbsenceFormData>({
     idAgent: absence?.idAgent || null,
     dateDebut: absence?.dateDebut || '',
     dateFin: absence?.dateFin || '',
@@ -84,7 +84,7 @@ const AbsenceModal: React.FC<AbsenceModalProps> = ({ isOpen, onClose, onSave, ab
     searchAgents(inputValue);
   };
 
-  const handleChange = (field: keyof FormData, value: any) => {
+  const handleChange = (field: keyof AbsenceFormData, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
     if (fieldErrors[field]) {
       setFieldErrors(prev => {

@@ -15,14 +15,8 @@ export interface NotificationPayload {
   message: string;
 }
 
-export interface PageResponse<T> {
-  content: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
-  totalPages: number;
-  last: boolean;
-}
+import type { PageResponse } from '../types/pagination';
+export type { PageResponse };
 
 export const notificationsService = {
   // Récupère toutes les notifications (sans pagination) – pour admin ou filtrage global

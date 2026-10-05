@@ -37,7 +37,7 @@ import DependantModal from '../components/modal/DependantModal';
 import type { AffiliationDto, AffiliationPayload } from '../components/modal/DependantModal';
 import EtudeModal from '../components/modal/EtudeModal';
 
-const BACKEND_URL = api.defaults.baseURL?.replace(/\/api$/, '') || 'http://192.168.1.44:8083';
+const BACKEND_URL = api.defaults.baseURL?.replace(/\/api$/, '') || 'http://localhost:8083';
 type ModalType = 'dependant' | 'document' | 'affectation' | 'promotion' | 'etude' | null;
 
 // Composants d'affichage
@@ -103,9 +103,9 @@ const AgentDetails: React.FC = () => {
 
     const handleSaveAffectation = async (data: AffectationPayload) => {
         if ((selectedItem as AffectationDto)?.id) {
-            await affectationService.update((selectedItem as AffectationDto).id, data as any);
+            await affectationService.update((selectedItem as AffectationDto).id, data);
         } else {
-            await affectationService.create(data as any);
+            await affectationService.create(data);
         }
         closeModal();
         await refreshAgent();
@@ -113,9 +113,9 @@ const AgentDetails: React.FC = () => {
 
     const handleSavePromotion = async (data: PromotionPayload) => {
         if ((selectedItem as PromotionDto)?.id) {
-            await promotionService.update((selectedItem as PromotionDto).id, data as any);
+            await promotionService.update((selectedItem as PromotionDto).id, data);
         } else {
-            await promotionService.create(data as any);
+            await promotionService.create(data);
         }
         closeModal();
         await refreshAgent();

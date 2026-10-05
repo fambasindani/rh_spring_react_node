@@ -23,7 +23,7 @@ interface SanctionModalProps {
   } | null;
 }
 
-interface FormData {
+interface SanctionFormData {
   idAgent: number | null;
   typeSanction: string;
   motif: string;
@@ -32,7 +32,7 @@ interface FormData {
 }
 
 const SanctionModal: React.FC<SanctionModalProps> = ({ isOpen, onClose, onSave, sanction }) => {
-  const [form, setForm] = useState<FormData>({
+  const [form, setForm] = useState<SanctionFormData>({
     idAgent: sanction?.idAgent || null,
     typeSanction: sanction?.typeSanction || '',
     motif: sanction?.motif || '',
@@ -81,7 +81,7 @@ const SanctionModal: React.FC<SanctionModalProps> = ({ isOpen, onClose, onSave, 
     searchAgents(inputValue);
   };
 
-  const handleChange = (field: keyof FormData, value: any) => {
+  const handleChange = (field: keyof SanctionFormData, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
     if (fieldErrors[field]) {
       setFieldErrors(prev => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import type { ApiErrorResponse } from '../../types/errors';
 import Modal from '../ui/Modal';
 import Input from '../ui/Input';
 import Select from '../ui/Select';
@@ -29,11 +30,6 @@ export interface AffiliationPayload {
   statut: boolean;
 }
 
-interface ApiErrorResponse {
-  status: number;
-  message: string;
-  errors?: Record<string, string>;
-}
 
 interface DependantModalProps {
   isOpen: boolean;
@@ -144,7 +140,7 @@ const DependantModal: React.FC<DependantModalProps> = ({
         if (data.errors) {
           setFieldErrors(data.errors);
         } else {
-          setFieldErrors({ _global: data.message });
+          setFieldErrors({ _global: data.message || 'Erreur de validation' });
         }
       } else {
         setFieldErrors({ _global: 'Erreur réseau. Veuillez réessayer.' });

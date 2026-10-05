@@ -45,14 +45,8 @@ export interface CongeRequest {
   motif?: string;
 }
 
-export interface PageResponse<T> {
-  content: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
-  totalPages: number;
-  last: boolean;
-}
+import type { PageResponse } from '../types/pagination';
+export type { PageResponse };
 
 // src/services/conges.service.ts
 export const congesService = {

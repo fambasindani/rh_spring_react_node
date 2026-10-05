@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import type { BackendError } from '../../types/errors';
 import Modal from '../ui/Modal';
 import Input from '../ui/Input';
 import Button from '../Button';
@@ -12,10 +13,6 @@ interface DirectionModalProps {
   direction?: Direction;
 }
 
-interface BackendError {
-  message?: string;
-  errors?: Record<string, string>;
-}
 
 const DirectionModal: React.FC<DirectionModalProps> = ({
   isOpen,

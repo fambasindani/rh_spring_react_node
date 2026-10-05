@@ -33,7 +33,7 @@ interface CongeModalProps {
   currentUser?: User | null;
 }
 
-interface FormData {
+interface CongeFormData {
   idAgent: number | null;
   idTypeConge: number | null;
   dateDebut: string;
@@ -48,7 +48,7 @@ const CongeModal: React.FC<CongeModalProps> = ({ isOpen, onClose, onSave, conge,
   // 🔥 Pour un agent, on force l'ID de l'agent (agentId), pas l'ID de l'utilisateur
   const defaultAgentId = isAgent ? currentUser?.agentId ?? null : null;
 
-  const [form, setForm] = useState<FormData>({
+  const [form, setForm] = useState<CongeFormData>({
     idAgent: conge?.idAgent ?? defaultAgentId,
     idTypeConge: conge?.idTypeConge ?? null,
     dateDebut: conge?.dateDebut ?? '',
@@ -114,7 +114,7 @@ const CongeModal: React.FC<CongeModalProps> = ({ isOpen, onClose, onSave, conge,
     if (!isAgent) searchAgents(inputValue);
   };
 
-  const handleChange = (field: keyof FormData, value: any) => {
+  const handleChange = (field: keyof CongeFormData, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
     if (fieldErrors[field]) {
       setFieldErrors(prev => {

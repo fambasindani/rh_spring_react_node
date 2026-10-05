@@ -11,14 +11,7 @@ import { FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
 import { TableSkeleton } from '../components/ui/Skeleton';
 
 // Type pour la réponse paginée (identique à celle du service)
-interface PageResponse<T> {
-  content: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalPages: number;
-  totalElements: number;
-  last: boolean;
-}
+import type { PageResponse } from '../types/pagination';
 
 const Directions: React.FC = () => {
   const [directions, setDirections] = useState<Direction[]>([]);

@@ -11,10 +11,8 @@ import { fr } from 'date-fns/locale';
 import { AxiosError } from 'axios';
 import { BACKEND_BASE_URL } from '../config/constants';
 import { TableSkeleton } from '../components/ui/Skeleton';
+import type { ErrorResponse } from '../types/errors';
 
-interface ErrorResponse {
-  message: string;
-}
 
 const Profile: React.FC = () => {
   const [agent, setAgent] = useState<AgentDetailsResponse | null>(null);

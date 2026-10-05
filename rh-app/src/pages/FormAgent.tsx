@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import type { ErrorResponse } from '../types/errors';
 import Webcam from 'react-webcam';
 import {
   FaCamera, FaTrash, FaPlus, FaUser, FaBriefcase,
@@ -24,7 +25,7 @@ import { FormAgentSkeleton } from '../components/ui/Skeleton';
 
 
 // URL de base du backend (sans /api)
-const BACKEND_URL = api.defaults.baseURL?.replace(/\/api$/, '') || 'http://192.168.1.44:8083';
+const BACKEND_URL = api.defaults.baseURL?.replace(/\/api$/, '') || 'http://localhost:8083';
 
 // Types internes
 interface Dependant {
@@ -60,7 +61,7 @@ interface AgentPayload {
   photo?: string;
 }
 
-interface FormData {
+interface AgentFormData {
   matricule: string;
   nom: string;
   postnom: string;
@@ -110,9 +111,6 @@ interface FormAgentProps {
   isOwnProfile?: boolean;
 }
 
-interface ErrorResponse {
-  message: string;
-}
 
 const FormAgent: React.FC<FormAgentProps> = ({ initialValues, onSuccess, isOwnProfile = false }) => {
   const [grades, setGrades] = useState<GradeResponse[]>([]);
@@ -121,7 +119,7 @@ const FormAgent: React.FC<FormAgentProps> = ({ initialValues, onSuccess, isOwnPr
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<AgentFormData>({
     matricule: initialValues?.matricule || '',
     nom: initialValues?.nom || '',
     postnom: initialValues?.postnom || '',
@@ -130,7 +128,7 @@ const FormAgent: React.FC<FormAgentProps> = ({ initialValues, onSuccess, isOwnPr
     date_naissance: initialValues?.date_naissance || '',
     email: initialValues?.email || '',
     telephone: initialValues?.telephone || '',
-    etat_civil: (initialValues?.etat_civil as FormData['etat_civil']) || '',
+    etat_civil: (initialValues?.etat_civil as AgentFormData['etat_civil']) || '',
     date_engagement: initialValues?.date_engagement || '',
     reference_engagement: initialValues?.reference_engagement || '',
     id_grade: '',
@@ -355,7 +353,7 @@ const FormAgent: React.FC<FormAgentProps> = ({ initialValues, onSuccess, isOwnPr
     e.preventDefault();
 
     // 1. Validation frontale des champs de l'agent
-    const requiredFields: { name: keyof FormData; label: string }[] = [
+    const requiredFields: { name: keyof AgentFormData; label: string }[] = [
       { name: 'matricule', label: 'Matricule' },
       { name: 'nom', label: 'Nom' },
       { name: 'postnom', label: 'Postnom' },

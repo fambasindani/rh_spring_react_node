@@ -22,14 +22,8 @@ export interface PresencePayload {
   observation?: string;
 }
 
-export interface PageResponse<T> {
-  content: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
-  totalPages: number;
-  last: boolean;
-}
+import type { PageResponse } from '../types/pagination';
+export type { PageResponse };
 
 export const presencesService = {
   // Paginée avec recherche par agent (utilisée dans le composant)

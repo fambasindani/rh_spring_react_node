@@ -192,7 +192,7 @@ const PresenceDetail: React.FC = () => {
                 <div className="flex flex-col items-center">
                   <span className="text-sm text-gray-500 mb-2">Photo</span>
                   <img
-                    src={`http://192.168.1.44:8083${presence.pointageArrivee.photoPath}`}
+                    src={`http://localhost:8083${presence.pointageArrivee.photoPath}`}
                     alt="Photo pointage arrivée"
                     className="w-40 h-40 object-cover rounded-xl border"
                   />
@@ -245,7 +245,7 @@ const PresenceDetail: React.FC = () => {
                 <div className="flex flex-col items-center">
                   <span className="text-sm text-gray-500 mb-2">Photo</span>
                   <img
-                    src={`http://192.168.1.44:8083${presence.pointageDepart.photoPath}`}
+                    src={`http://localhost:8083${presence.pointageDepart.photoPath}`}
                     alt="Photo pointage départ"
                     className="w-40 h-40 object-cover rounded-xl border"
                   />

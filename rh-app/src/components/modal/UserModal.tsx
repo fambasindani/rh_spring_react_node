@@ -20,12 +20,7 @@ interface UserModalProps {
   };
 }
 
-interface UserPayload {
-  agentId: number;
-  roleIds: number[];
-  actif: boolean;
-  password?: string;
-}
+import type { UserPayload } from '../../types/User';
 
 const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, onSave, initialData }) => {
   const [agentId, setAgentId] = useState<number | null>(initialData?.agentId || null);

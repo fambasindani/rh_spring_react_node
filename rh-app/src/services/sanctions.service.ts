@@ -20,14 +20,8 @@ export interface SanctionPayload {
   reference?: string;
 }
 
-export interface PageResponse<T> {
-  content: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
-  totalPages: number;
-  last: boolean;
-}
+import type { PageResponse } from '../types/pagination';
+export type { PageResponse };
 
 export const sanctionsService = {
   async getAll(page: number = 0, size: number = 10, agentName: string = ''): Promise<PageResponse<Sanction>> {

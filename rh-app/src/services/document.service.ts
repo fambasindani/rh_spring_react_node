@@ -101,7 +101,7 @@ export const documentService = {
   getFileUrl: (cheminFichier: string): string => {
     const baseUrl =
       api.defaults.baseURL?.replace(/\/api$/, '') ||
-      'http://192.168.1.44:8083';
+      'http://localhost:8083';
 
     return `${baseUrl}${cheminFichier}`;
   },

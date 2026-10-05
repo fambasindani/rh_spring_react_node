@@ -14,14 +14,8 @@ export interface DirectionPayload {
   statut: boolean;
 }
 
-export interface PageResponse<T> {
-  content: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalPages: number;
-  totalElements: number;
-  last: boolean;
-}
+import type { PageResponse } from '../types/pagination';
+export type { PageResponse };
 
 export const directionService = {
   getAllPaginated: async (page: number = 0, size: number = 10): Promise<PageResponse<Direction>> => {

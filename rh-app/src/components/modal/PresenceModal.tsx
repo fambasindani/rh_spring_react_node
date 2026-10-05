@@ -24,7 +24,7 @@ interface PresenceModalProps {
   } | null;
 }
 
-interface FormData {
+interface PresenceFormData {
   idAgent: number | null;
   datePresence: string;
   heureArrivee: string;
@@ -34,7 +34,7 @@ interface FormData {
 }
 
 const PresenceModal: React.FC<PresenceModalProps> = ({ isOpen, onClose, onSave, presence }) => {
-  const [form, setForm] = useState<FormData>({
+  const [form, setForm] = useState<PresenceFormData>({
     idAgent: presence?.idAgent || null,
     datePresence: presence?.datePresence || '',
     heureArrivee: presence?.heureArrivee || '',
@@ -86,7 +86,7 @@ const PresenceModal: React.FC<PresenceModalProps> = ({ isOpen, onClose, onSave, 
     searchAgents(inputValue);
   };
 
-  const handleChange = (field: keyof FormData, value: any) => {
+  const handleChange = (field: keyof PresenceFormData, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
     if (fieldErrors[field]) {
       setFieldErrors(prev => {
