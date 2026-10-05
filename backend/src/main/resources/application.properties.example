@@ -1,0 +1,29 @@
+# Exemple de configuration backend — copier vers application.properties
+spring.application.name=microservice-auth
+
+# SQL Server
+spring.datasource.url=jdbc:sqlserver://NOM_SERVEUR:1433;databaseName=bdid;encrypt=true;trustServerCertificate=true
+spring.datasource.username=sa
+spring.datasource.password=MOT_DE_PASSE
+spring.datasource.driver-class-name=com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+# JPA
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# Serveur (0.0.0.0 = toutes les interfaces)
+server.address=0.0.0.0
+server.port=8083
+
+# JWT (remplacer par une valeur secrete)
+jwt.secret=CHANGER_CE_SECRET
+jwt.expiration=86400000
+
+# Upload de fichiers
+spring.servlet.multipart.max-file-size=15MB
+spring.servlet.multipart.max-request-size=15MB
+file.upload-dir=uploads/
+spring.web.resources.static-locations=file:${user.dir}/uploads/,classpath:/static/
+
+spring.jpa.open-in-view=false

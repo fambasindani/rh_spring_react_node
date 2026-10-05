@@ -1,0 +1,36 @@
+# Dépendances
+node_modules/
+**/node_modules/
+
+# Builds / artefacts
+dist/
+**/dist/
+target/
+**/target/
+build/
+**/build/
+
+# Configuration & secrets (ne jamais committer)
+.env
+**/.env
+backend/src/main/resources/application.properties
+
+# Uploads / fichiers générés
+backend/uploads/
+scanner-server/scans/
+
+# IDE
+.idea/
+**/.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db

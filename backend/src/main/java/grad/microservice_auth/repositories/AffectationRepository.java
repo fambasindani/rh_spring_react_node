@@ -1,0 +1,13 @@
+package grad.microservice_auth.repositories;
+
+import grad.microservice_auth.entities.Affectation;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface AffectationRepository extends JpaRepository<Affectation, Long> {
+    List<Affectation> findByAgentId(Long agentId);
+
+}
