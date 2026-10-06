@@ -16,6 +16,7 @@ import { useIdleTimeout } from './hooks/useIdleTimeout';
 import Profile from './pages/Profile';
 import Conges from './pages/Conges';
 import Presences from './pages/Presences';
+import SuiviPresenceAbsence from './pages/SuiviPresenceAbsence';
 import Permissions from './pages/Permissions';
 import Absences from './pages/Absences';
 import Sanctions from './pages/Sanctions';
@@ -59,6 +60,7 @@ function AppContent() {
 
         <Route path="conges" element={<Conges />} />
         <Route path="presences" element={<Presences />} />
+        <Route path="suivi-presences" element={<SuiviPresenceAbsence />} />
         <Route path="presences/detail/:agentId" element={<PresenceDetail />} />
         <Route path="permissions" element={<Permissions />} />
         <Route path="absences" element={<Absences />} />

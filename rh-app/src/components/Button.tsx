@@ -58,7 +58,7 @@ const Button: React.FC<ButtonProps> = ({
         {icon && iconPosition === 'left' && (
           <span className={`mr-2 inline-flex ${isLoading ? 'hidden' : ''}`}>{icon}</span>
         )}
-        <span>{children}</span>
+        {children}
         {icon && iconPosition === 'right' && (
           <span className={`ml-2 inline-flex ${isLoading ? 'hidden' : ''}`}>{icon}</span>
         )}

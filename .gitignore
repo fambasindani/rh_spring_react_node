@@ -34,3 +34,18 @@ logs/
 # OS
 .DS_Store
 Thumbs.db
+
+# Flutter / Dart
+.dart_tool/
+**/.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+**/android/.gradle/
+**/ios/Pods/
+**/ios/.symlinks/
+**/local.properties
+**/GeneratedPluginRegistrant.*
+
+# Fichiers temporaires (Word, Excel...)
+~$*
+*.tmp

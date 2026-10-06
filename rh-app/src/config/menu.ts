@@ -17,9 +17,11 @@ import {
   ShieldCheckIcon,
   UserGroupIcon,
   Cog8ToothIcon,
+  ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import { FaGraduationCap, FaRegCalendarAlt, FaUserCheck, FaGavel, FaChalkboardTeacher, FaFileContract, FaStar, FaPlane } from 'react-icons/fa';
 
+// NOTE: le champ "name" contient une clé de traduction (voir src/i18n/fr.json / en.json).
 export interface MenuItem {
   name: string;
   href?: string;
@@ -30,89 +32,90 @@ export interface MenuItem {
 
 export const menuConfig: MenuItem[] = [
   {
-    name: 'Tableau de bord',
+    name: 'nav.dashboard',
     href: '/',
     icon: HomeIcon,
     droits: ['ADMIN', 'ALL_DASHBOARD']
   },
   {
-    name: 'Gestion RH',
+    name: 'nav.gestionRh',
     icon: UsersIcon,
     droits: ['VIEW_AGENTS', 'CREATE_AGENT', 'UPDATE_AGENT', 'DELETE_AGENT', 'MANAGE_GRADES', 'MANAGE_FONCTIONS', 'MANAGE_DIRECTIONS'],
     children: [
-      { name: 'Agents & Carrière', href: '/agents', icon: UsersIcon, droits: ['VIEW_AGENTS', 'CREATE_AGENT', 'UPDATE_AGENT', 'DELETE_AGENT'] },
-      { name: 'Grades', href: '/grades', icon: FaGraduationCap, droits: ['MANAGE_GRADES'] },
-      { name: 'Fonctions', href: '/fonctions', icon: BriefcaseIcon, droits: ['MANAGE_FONCTIONS'] },
-      { name: 'Directions', href: '/directions', icon: DocumentTextIcon, droits: ['MANAGE_DIRECTIONS'] },
+      { name: 'nav.agents', href: '/agents', icon: UsersIcon, droits: ['VIEW_AGENTS', 'CREATE_AGENT', 'UPDATE_AGENT', 'DELETE_AGENT'] },
+      { name: 'nav.grades', href: '/grades', icon: FaGraduationCap, droits: ['MANAGE_GRADES'] },
+      { name: 'nav.fonctions', href: '/fonctions', icon: BriefcaseIcon, droits: ['MANAGE_FONCTIONS'] },
+      { name: 'nav.directions', href: '/directions', icon: DocumentTextIcon, droits: ['MANAGE_DIRECTIONS'] },
     ]
   },
   {
-    name: 'Absences & Congés',
+    name: 'nav.absencesConges',
     icon: CalendarIcon,
     droits: ['VIEW_CONGES', 'CREATE_CONGE', 'VALIDATE_CONGES', 'VIEW_PRESENCES', 'MANAGE_PRESENCES', 'VIEW_ABSENCES', 'MANAGE_ABSENCES', 'VIEW_PERMISSIONS', 'MANAGE_PERMISSIONS', 'MANAGE_ZONES', 'MANAGE_HORAIRES', 'MANAGE_JOURS_FERIES'],
     children: [
-      { name: 'Demandes de congé', href: '/conges', icon: FaRegCalendarAlt, droits: ['VIEW_CONGES', 'CREATE_CONGE', 'VALIDATE_CONGES'] },
-      { name: 'Présences', href: '/presences', icon: ClockIcon, droits: ['VIEW_PRESENCES', 'MANAGE_PRESENCES'] },
-      { name: 'Absences', href: '/absences', icon: ExclamationTriangleIcon, droits: ['VIEW_ABSENCES', 'MANAGE_ABSENCES'] },
-      { name: 'Permissions', href: '/permissions', icon: FaUserCheck, droits: ['VIEW_PERMISSIONS', 'MANAGE_PERMISSIONS'] },
-      { name: 'Configuration pointage', href: '/configuration', icon: Cog8ToothIcon, droits: ['MANAGE_ZONES', 'MANAGE_HORAIRES', 'MANAGE_JOURS_FERIES', 'ADMIN'] },
+      { name: 'nav.suivi', href: '/suivi-presences', icon: ChartBarIcon, droits: ['VIEW_PRESENCES', 'MANAGE_PRESENCES', 'VIEW_ABSENCES', 'MANAGE_ABSENCES'] },
+      { name: 'nav.conges', href: '/conges', icon: FaRegCalendarAlt, droits: ['VIEW_CONGES', 'CREATE_CONGE', 'VALIDATE_CONGES'] },
+      { name: 'nav.presences', href: '/presences', icon: ClockIcon, droits: ['VIEW_PRESENCES', 'MANAGE_PRESENCES'] },
+      { name: 'nav.absences', href: '/absences', icon: ExclamationTriangleIcon, droits: ['VIEW_ABSENCES', 'MANAGE_ABSENCES'] },
+      { name: 'nav.permissions', href: '/permissions', icon: FaUserCheck, droits: ['VIEW_PERMISSIONS', 'MANAGE_PERMISSIONS'] },
+      { name: 'nav.configuration', href: '/configuration', icon: Cog8ToothIcon, droits: ['MANAGE_ZONES', 'MANAGE_HORAIRES', 'MANAGE_JOURS_FERIES', 'ADMIN'] },
     ]
   },
   {
-    name: 'Discipline & Sanctions',
+    name: 'nav.discipline',
     icon: FaGavel,
     droits: ['VIEW_SANCTIONS', 'MANAGE_SANCTIONS'],
     children: [
-      { name: 'Sanctions', href: '/sanctions', icon: FaGavel, droits: ['VIEW_SANCTIONS', 'MANAGE_SANCTIONS'] },
+      { name: 'nav.sanctions', href: '/sanctions', icon: FaGavel, droits: ['VIEW_SANCTIONS', 'MANAGE_SANCTIONS'] },
     ]
   },
   {
-    name: 'Formations',
+    name: 'nav.formations',
     icon: AcademicCapIcon,
     droits: ['VIEW_FORMATIONS', 'MANAGE_FORMATIONS', 'VIEW_CATALOGUE_FORMATIONS', 'MANAGE_INSCRIPTIONS'],
     children: [
-      { name: 'Catalogue formations', href: '/formations', icon: FaChalkboardTeacher,
+      { name: 'nav.catalogue', href: '/formations', icon: FaChalkboardTeacher,
         droits: ['VIEW_CATALOGUE_FORMATIONS', 'MANAGE_FORMATIONS'] },
-      { name: 'Inscriptions', href: '/inscriptions', icon: FaChalkboardTeacher,
+      { name: 'nav.inscriptions', href: '/inscriptions', icon: FaChalkboardTeacher,
         droits: ['MANAGE_INSCRIPTIONS', 'MANAGE_FORMATIONS'] },
-      { name: 'Mes formations', href: '/mes-formations', icon: FaChalkboardTeacher,
+      { name: 'nav.mesFormations', href: '/mes-formations', icon: FaChalkboardTeacher,
         droits: ['VIEW_FORMATIONS'] },
     ]
   },
   {
-    name: 'Contrats & Évaluations',
+    name: 'nav.contratsEvaluations',
     icon: DocumentTextIcon,
     droits: ['VIEW_CONTRATS', 'MANAGE_CONTRATS', 'VIEW_EVALUATIONS', 'MANAGE_EVALUATIONS'],
     children: [
-      { name: 'Contrats', href: '/contrats', icon: FaFileContract, droits: ['VIEW_CONTRATS', 'MANAGE_CONTRATS'] },
-      { name: 'Évaluations', href: '/evaluations', icon: FaStar, droits: ['VIEW_EVALUATIONS', 'MANAGE_EVALUATIONS'] },
+      { name: 'nav.contrats', href: '/contrats', icon: FaFileContract, droits: ['VIEW_CONTRATS', 'MANAGE_CONTRATS'] },
+      { name: 'nav.evaluations', href: '/evaluations', icon: FaStar, droits: ['VIEW_EVALUATIONS', 'MANAGE_EVALUATIONS'] },
     ]
   },
   {
-    name: 'Missions & Primes',
+    name: 'nav.missionsPrimes',
     icon: TruckIcon,
     droits: ['VIEW_MISSIONS', 'MANAGE_MISSIONS', 'VIEW_PRIMES', 'MANAGE_PRIMES', 'VIEW_RETRAITES', 'MANAGE_RETRAITES'],
     children: [
-      { name: 'Missions', href: '/missions', icon: FaPlane, droits: ['VIEW_MISSIONS', 'MANAGE_MISSIONS'] },
-      { name: 'Primes', href: '/primes', icon: CurrencyDollarIcon, droits: ['VIEW_PRIMES', 'MANAGE_PRIMES'] },
-      { name: 'Retraites', href: '/retraites', icon: HeartIcon, droits: ['VIEW_RETRAITES', 'MANAGE_RETRAITES'] },
+      { name: 'nav.missions', href: '/missions', icon: FaPlane, droits: ['VIEW_MISSIONS', 'MANAGE_MISSIONS'] },
+      { name: 'nav.primes', href: '/primes', icon: CurrencyDollarIcon, droits: ['VIEW_PRIMES', 'MANAGE_PRIMES'] },
+      { name: 'nav.retraites', href: '/retraites', icon: HeartIcon, droits: ['VIEW_RETRAITES', 'MANAGE_RETRAITES'] },
     ]
   },
   {
-    name: 'Notifications',
+    name: 'nav.notifications',
     href: '/notifications',
     icon: BellIcon,
     droits: ['VIEW_NOTIFICATIONS', 'MANAGE_NOTIFICATIONS']
   },
   {
-    name: 'Paramètres',
+    name: 'nav.parametres',
     icon: Cog6ToothIcon,
     droits: ['VIEW_UTILISATEURS', 'MANAGE_UTILISATEURS', 'VIEW_ROLES', 'MANAGE_ROLES', 'VIEW_DROITS', 'MANAGE_DROITS', 'VIEW_LOGS'],
     children: [
-      { name: 'Utilisateurs', href: '/users', icon: UserGroupIcon, droits: ['VIEW_UTILISATEURS', 'MANAGE_UTILISATEURS'] },
-      { name: 'Rôles', href: '/roles', icon: ShieldCheckIcon, droits: ['VIEW_ROLES', 'MANAGE_ROLES'] },
-      { name: 'Droits', href: '/droits', icon: KeyIcon, droits: ['VIEW_DROITS', 'MANAGE_DROITS'] },
-      { name: 'Gestion des logs', href: '/logs', icon: ClipboardDocumentListIcon, droits: ['VIEW_LOGS'] },
+      { name: 'nav.utilisateurs', href: '/users', icon: UserGroupIcon, droits: ['VIEW_UTILISATEURS', 'MANAGE_UTILISATEURS'] },
+      { name: 'nav.roles', href: '/roles', icon: ShieldCheckIcon, droits: ['VIEW_ROLES', 'MANAGE_ROLES'] },
+      { name: 'nav.droits', href: '/droits', icon: KeyIcon, droits: ['VIEW_DROITS', 'MANAGE_DROITS'] },
+      { name: 'nav.logs', href: '/logs', icon: ClipboardDocumentListIcon, droits: ['VIEW_LOGS'] },
     ]
   }
 ];

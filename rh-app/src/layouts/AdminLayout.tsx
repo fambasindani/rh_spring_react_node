@@ -10,8 +10,10 @@ import {
 } from '@heroicons/react/24/outline';
 import Dropdown, { DropdownItem } from '../components/ui/Dropdown';
 import NotificationsDropdown from '../components/NotificationsDropdown';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { menuConfig } from '../config/menu';
 import type { MenuItem } from '../config/menu';
 
@@ -21,6 +23,7 @@ const AdminLayout: React.FC = () => {
   const location = useLocation();
   const { signOut, user } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
 
   const userDroits = user?.droits || [];
   const userRoles = user?.roles || [];
@@ -75,7 +78,7 @@ const AdminLayout: React.FC = () => {
       }
       if (item.href && path.startsWith(item.href) && item.href !== '/') return item.name;
     }
-    return 'Tableau de bord';
+    return 'nav.dashboard';
   };
   const currentPageName = getCurrentPageName();
 
@@ -123,7 +126,7 @@ const AdminLayout: React.FC = () => {
                 isChildActive ? 'text-blue-400' : 'text-slate-400 group-hover:text-slate-300'
               }`}
             />
-            <span className="flex-1 text-left tracking-wide">{item.name}</span>
+            <span className="flex-1 text-left tracking-wide">{t(item.name)}</span>
             <ChevronDownIcon
               className={`ml-2 h-4 w-4 text-slate-500 transition-transform duration-200 ${
                 isOpen ? 'rotate-180 text-slate-300' : ''
@@ -159,7 +162,7 @@ const AdminLayout: React.FC = () => {
               active ? 'text-white' : 'text-slate-400 group-hover:text-slate-300'
             }`}
           />
-          <span className="tracking-wide">{item.name}</span>
+          <span className="tracking-wide">{t(item.name)}</span>
         </Link>
       </div>
     );
@@ -169,7 +172,7 @@ const AdminLayout: React.FC = () => {
     <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden font-sans">
       {/* --- SIDEBAR MOBILE --- */}
       <div
-        className={`fixed inset-0 z-50 flex lg:hidden ${
+        className={`fixed inset-0 z-50 flex lg:hidden print:hidden ${
           sidebarOpen ? 'visible' : 'invisible'
         }`}
       >
@@ -203,7 +206,7 @@ const AdminLayout: React.FC = () => {
                   GS-RH
                 </span>
                 <span className="text-[11px] text-slate-500 font-medium leading-none">
-                  Ressources Humaines
+                  {t('app.subtitle')}
                 </span>
               </div>
             </div>
@@ -218,7 +221,7 @@ const AdminLayout: React.FC = () => {
       </div>
 
       {/* --- SIDEBAR DESKTOP --- */}
-      <div className="hidden lg:flex lg:flex-shrink-0 shadow-xl shadow-slate-900/10 z-20">
+      <div className="hidden lg:flex lg:flex-shrink-0 shadow-xl shadow-slate-900/10 z-20 print:hidden">
         <div className="flex w-68 flex-col bg-slate-900 text-slate-200">
           <div className="flex items-center px-6 h-20 border-b border-slate-800/50">
             <div className="flex items-center space-x-3 pt-2">
@@ -230,7 +233,7 @@ const AdminLayout: React.FC = () => {
                   GS-RH
                 </span>
                 <span className="text-[11px] text-slate-500 font-medium leading-none">
-                  Tableau de bord
+                  {t('app.subtitle')}
                 </span>
               </div>
             </div>
@@ -246,7 +249,7 @@ const AdminLayout: React.FC = () => {
 
       {/* --- MAIN CONTENT & HEADER --- */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-20 items-center justify-between px-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 shadow-sm z-10">
+        <header className="flex h-20 items-center justify-between px-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 shadow-sm z-10 print:hidden">
           <div className="flex items-center lg:hidden">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -257,17 +260,20 @@ const AdminLayout: React.FC = () => {
           </div>
 
           <div className="hidden sm:block text-sm font-medium text-slate-400">
-            Espace sécurisé <span className="text-slate-300 dark:text-slate-600 mx-2">/</span>{' '}
-            <span className="text-slate-700 dark:text-slate-200">{currentPageName}</span>
+            {t('header.secureArea')} <span className="text-slate-300 dark:text-slate-600 mx-2">/</span>{' '}
+            <span className="text-slate-700 dark:text-slate-200">{t(currentPageName)}</span>
           </div>
 
           <div className="flex-1 flex justify-end items-center space-x-2">
+            {/* --- BASCULE LANGUE --- */}
+            <LanguageSwitcher />
+
             {/* --- BASCULE THEME --- */}
             <button
               onClick={toggleTheme}
               className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 dark:hover:text-slate-200 rounded-xl transition-colors"
-              title={theme === 'dark' ? 'Passer au theme clair' : 'Passer au theme sombre'}
-              aria-label="Basculer le theme"
+              title={t('header.switchTheme')}
+              aria-label={t('header.switchTheme')}
             >
               {theme === 'dark' ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
             </button>
@@ -304,16 +310,16 @@ const AdminLayout: React.FC = () => {
               }
               align="right"
             >
-              <DropdownItem onClick={() => navigate('/profile')}>Mon Profil</DropdownItem>
+              <DropdownItem onClick={() => navigate('/profile')}>{t('header.myProfile')}</DropdownItem>
               <div className="border-t border-slate-100 dark:border-slate-700 my-1" />
               <DropdownItem onClick={handleLogout} className="text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10">
-                Déconnexion
+                {t('header.logout')}
               </DropdownItem>
             </Dropdown>
           </div>
         </header>
 
-        <main className="flex-1 overflow-auto p-8 bg-slate-50/50 dark:bg-slate-950">
+        <main className="flex-1 overflow-auto p-8 bg-slate-50/50 dark:bg-slate-950 print:overflow-visible print:p-0 print:bg-white">
           <Outlet />
         </main>
       </div>

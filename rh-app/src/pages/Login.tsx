@@ -1,10 +1,12 @@
 // src/pages/Login.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import Card, { CardBody } from '../components/ui/Card';
 import Button from '../components/Button';
 import Input from '../components/ui/Input';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import logo from '../assets/logo.png';
 
 const Login: React.FC = () => {
@@ -16,6 +18,7 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { signIn, user } = useAuth();
+  const { t } = useTranslation();
 
   // Dès que l'utilisateur est authentifié, on redirige vers le tableau de bord.
   // Filet de sécurité : même si la navigation juste après signIn échoue/lente,
@@ -29,13 +32,13 @@ const Login: React.FC = () => {
   const validateFields = (): boolean => {
     let isValid = true;
     if (!email.trim()) {
-      setEmailError('L’adresse email est requise');
+      setEmailError(t('login.emailRequired'));
       isValid = false;
     } else {
       setEmailError('');
     }
     if (!password.trim()) {
-      setPasswordError('Le mot de passe est requis');
+      setPasswordError(t('login.passwordRequired'));
       isValid = false;
     } else {
       setPasswordError('');
@@ -54,7 +57,7 @@ const Login: React.FC = () => {
       navigate('/', { replace: true });
     } else {
       // Erreur retournée par le backend (ex: identifiants incorrects)
-      setApiError(result.error || 'Erreur de connexion');
+      setApiError(result.error || t('login.error'));
     }
     setIsLoading(false);
   };
@@ -64,21 +67,24 @@ const Login: React.FC = () => {
     hasError ? 'border-red-500 focus:ring-red-500' : '';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 relative">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <Card className="w-full max-w-md shadow-2xl border-0">
         <CardBody className="p-8">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <img src={logo} alt="Logo" className="h-16 w-auto" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-800">Administration</h1>
-            <p className="text-gray-500 mt-1">Connectez-vous à votre compte</p>
+            <h1 className="text-2xl font-bold text-gray-800">{t('login.title')}</h1>
+            <p className="text-gray-500 mt-1">{t('login.subtitle')}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <Input
-                label="Adresse email"
+                label={t('login.email')}
                 type="email"
                 name="email"
                 autoComplete="username"
@@ -98,7 +104,7 @@ const Login: React.FC = () => {
 
             <div>
               <Input
-                label="Mot de passe"
+                label={t('login.password')}
                 type="password"
                 name="password"
                 autoComplete="current-password"
@@ -129,12 +135,12 @@ const Login: React.FC = () => {
               isLoading={isLoading}
               disabled={isLoading}
             >
-              Se connecter
+              {t('login.submit')}
             </Button>
           </form>
 
           <div className="mt-6 text-center text-xs text-gray-400">
-            <p>Utilisez les identifiants fournis par l’administrateur</p>
+            <p>{t('login.hint')}</p>
           </div>
         </CardBody>
       </Card>
