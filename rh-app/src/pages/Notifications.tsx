@@ -1,10 +1,11 @@
 // src/pages/Notifications.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { notificationsService } from '../services/notifications.service';
 import type { Notification } from '../services/notifications.service';
 import Table from '../components/ui/Table';
 import type { Column } from '../components/ui/Table';
+import Pagination from '../components/ui/Pagination';
 import Button from '../components/Button';
 import Card, { CardHeader, CardBody } from '../components/ui/Card';
 import NotificationModal from '../components/modal/NotificationModal';
@@ -23,6 +24,8 @@ const Notifications: React.FC = () => {
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: number; label: string } | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
   const isAgent = user?.roles?.includes('AGENT') ?? false;
   const isAdmin = user?.roles?.includes('ADMIN') ?? false;
@@ -63,6 +66,15 @@ const Notifications: React.FC = () => {
   const filteredNotifications = notifications.filter(n =>
     n.message.toLowerCase().includes(search.toLowerCase()) ||
     (n.agentEmail?.toLowerCase() || '').includes(search.toLowerCase())
+  );
+
+  useEffect(() => {
+    setPage(0);
+  }, [search]);
+
+  const pagedNotifications = useMemo(
+    () => filteredNotifications.slice(page * pageSize, (page + 1) * pageSize),
+    [filteredNotifications, page, pageSize]
   );
 
   const openAddModal = () => {
@@ -245,7 +257,14 @@ const Notifications: React.FC = () => {
           <h2 className="text-lg font-semibold">Liste des notifications</h2>
         </CardHeader>
         <CardBody>
-          <Table columns={columns} data={filteredNotifications} bordered className="w-full" />
+          <Table columns={columns} data={pagedNotifications} bordered className="w-full" />
+          <Pagination
+            page={page}
+            pageSize={pageSize}
+            totalItems={filteredNotifications.length}
+            onPageChange={setPage}
+            onPageSizeChange={(s) => { setPageSize(s); setPage(0); }}
+          />
         </CardBody>
       </Card>
 

@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { agentService } from '../services/agents.service';
 import type { Agent, AgentDetailsResponse } from '../types/agent';
 import Table from '../components/ui/Table';
@@ -15,25 +16,26 @@ import { BACKEND_BASE_URL } from '../config/constants';
 import { AgentsListSkeleton } from '../components/ui/Skeleton';
 
 const ALL_COLUMNS = [
-  { key: 'agent', label: 'Agent' },
-  { key: 'fonction', label: 'Fonction' },
-  { key: 'direction', label: 'Direction' },
-  { key: 'grade', label: 'Grade' },
-  { key: 'sexe', label: 'Sexe' },
-  { key: 'telephone', label: 'Telephone' },
-  { key: 'province', label: 'Province' },
-  { key: 'statut', label: 'Statut' },
-  { key: 'actions', label: 'Actions' },
+  { key: 'agent', label: 'agents.colAgent' },
+  { key: 'fonction', label: 'agents.colFonction' },
+  { key: 'direction', label: 'agents.colDirection' },
+  { key: 'grade', label: 'agents.colGrade' },
+  { key: 'sexe', label: 'agents.colSexe' },
+  { key: 'telephone', label: 'agents.colPhone' },
+  { key: 'province', label: 'agents.colProvince' },
+  { key: 'statut', label: 'agents.colStatus' },
+  { key: 'actions', label: 'agents.colActions' },
 ];
 
 const Agents: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [search, setSearch] = useState('');
@@ -89,7 +91,7 @@ const Agents: React.FC = () => {
       setTotalPages(response.totalPages);
     } catch (err) {
       console.error(err);
-      setError('Impossible de charger les agents.');
+      setError(t('agents.loadError'));
     } finally {
       setLoading(false);
     }
@@ -123,11 +125,11 @@ const Agents: React.FC = () => {
   const handleExportExcel = () => {
     const exportData = filteredAgents.map(a => ({
       'Matricule': a.matricule, 'Nom': a.nom, 'Postnom': a.postnom || '',
-      'Prenom': a.prenom, 'Sexe': a.sexe === 'M' ? 'Masculin' : 'Feminin',
+      'Prenom': a.prenom, 'Sexe': a.sexe === 'M' ? t('common.male') : t('common.female'),
       'Email': a.email, 'Telephone': a.telephone || '',
       'Grade': a.grade?.sigle || '', 'Fonction': a.fonction?.nom || '',
       'Direction': a.direction?.sigle || '', 'Province': a.province || '',
-      'Statut': a.statut ? 'Actif' : 'Inactif', 'Date engagement': a.dateEngagement || '',
+      'Statut': a.statut ? t('common.active') : t('common.inactive'), 'Date engagement': a.dateEngagement || '',
     }));
     const ws = XLSX.utils.json_to_sheet(exportData);
     ws['!cols'] = [{ wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 10 }, { wch: 25 }, { wch: 15 }, { wch: 8 }, { wch: 25 }, { wch: 8 }, { wch: 20 }, { wch: 8 }, { wch: 15 }];
@@ -143,7 +145,7 @@ const Agents: React.FC = () => {
   const buildColumns = (): Column<Agent>[] => {
     const cols: Column<Agent>[] = [];
     if (visibleColumns.includes('agent')) {
-      cols.push({ key: 'nom', header: 'Agent', sortable: true,
+      cols.push({ key: 'nom', header: t('agents.colAgent'), sortable: true,
         render: (_: any, row: Agent) => {
           const initials = `${row.nom[0]}${row.prenom[0]}`.toUpperCase();
           const photoSrc = row.photo ? `${BACKEND_BASE_URL}${row.photo}` : null;
@@ -166,40 +168,40 @@ const Agents: React.FC = () => {
       });
     }
     if (visibleColumns.includes('fonction')) {
-      cols.push({ key: 'fonction', header: 'Fonction', sortable: true,
+      cols.push({ key: 'fonction', header: t('agents.colFonction'), sortable: true,
         render: (_: any, row: Agent) => <span className="text-sm text-gray-700">{row.fonction?.nom || '-'}</span>
       });
     }
     if (visibleColumns.includes('direction')) {
-      cols.push({ key: 'direction', header: 'Direction', sortable: true,
+      cols.push({ key: 'direction', header: t('agents.colDirection'), sortable: true,
         render: (_: any, row: Agent) => <span className="px-2 py-0.5 text-xs bg-indigo-50 text-indigo-700 rounded font-medium">{row.direction?.sigle || '-'}</span>
       });
     }
     if (visibleColumns.includes('grade')) {
-      cols.push({ key: 'grade', header: 'Grade', sortable: true,
+      cols.push({ key: 'grade', header: t('agents.colGrade'), sortable: true,
         render: (_: any, row: Agent) => <span className="px-2 py-1 text-xs bg-gray-100 rounded-md font-medium">{row.grade?.sigle || '-'}</span>
       });
     }
     if (visibleColumns.includes('sexe')) {
-      cols.push({ key: 'sexe', header: 'Sexe',
-        render: (_: any, row: Agent) => <span className="text-sm text-gray-600">{row.sexe === 'M' ? 'Masculin' : 'Feminin'}</span>
+      cols.push({ key: 'sexe', header: t('agents.colSexe'),
+        render: (_: any, row: Agent) => <span className="text-sm text-gray-600">{row.sexe === 'M' ? t('common.male') : t('common.female')}</span>
       });
     }
     if (visibleColumns.includes('telephone')) {
-      cols.push({ key: 'telephone', header: 'Telephone',
+      cols.push({ key: 'telephone', header: t('agents.colPhone'),
         render: (_: any, row: Agent) => <span className="text-sm text-gray-600">{row.telephone || '-'}</span>
       });
     }
     if (visibleColumns.includes('province')) {
-      cols.push({ key: 'province', header: 'Province',
+      cols.push({ key: 'province', header: t('agents.colProvince'),
         render: (_: any, row: Agent) => <span className="text-sm text-gray-600">{row.province || '-'}</span>
       });
     }
     if (visibleColumns.includes('statut')) {
-      cols.push({ key: 'statut', header: 'Statut',
+      cols.push({ key: 'statut', header: t('agents.colStatus'),
         render: (_: any, row: Agent) => (
           <span className={`px-2 py-1 text-xs rounded-full font-medium ${row.statut ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-            {row.statut ? 'Actif' : 'Inactif'}
+            {row.statut ? t('common.active') : t('common.inactive')}
           </span>
         )
       });
@@ -207,11 +209,11 @@ const Agents: React.FC = () => {
     if (visibleColumns.includes('actions')) {
       cols.push({ key: 'actions', header: '', render: (_: any, row: Agent) => (
         <div className="flex items-center space-x-1">
-          <button onClick={() => navigate(`/agents/${row.id}`)} className="p-2 rounded-lg hover:bg-blue-50 transition" title="Voir details">
+          <button onClick={() => navigate(`/agents/${row.id}`)} className="p-2 rounded-lg hover:bg-blue-50 transition" title={t('common.view')}>
             <FaEye className="text-blue-600" />
           </button>
           {canUpdate && (
-            <button onClick={() => navigate(`/agents/edit/${row.id}`)} className="p-2 rounded-lg hover:bg-amber-50 transition" title="Modifier">
+            <button onClick={() => navigate(`/agents/edit/${row.id}`)} className="p-2 rounded-lg hover:bg-amber-50 transition" title={t('common.edit')}>
               <FaEdit className="text-amber-600" />
             </button>
           )}
@@ -237,12 +239,12 @@ const Agents: React.FC = () => {
             } catch {
               setPdfModal(null);
             }
-          }} className="p-2 rounded-lg hover:bg-purple-50 transition" title="Fiche PDF">
+          }} className="p-2 rounded-lg hover:bg-purple-50 transition" title={t('agents.pdfTitle')}>
             <FaFilePdf className="text-purple-600" />
           </button>
           {canDelete && (
             <button onClick={() => setDeleteConfirm({ id: row.id, name: `${row.nom} ${row.prenom}` })}
-              className="p-2 rounded-lg hover:bg-red-50 transition" title="Supprimer">
+              className="p-2 rounded-lg hover:bg-red-50 transition" title={t('common.delete')}>
               <FaTrash className="text-red-600" />
             </button>
           )}
@@ -265,31 +267,31 @@ const Agents: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Gestion des agents</h1>
-          <p className="text-sm text-gray-500">{totalElements} agent{totalElements !== 1 ? 's' : ''}</p>
+          <h1 className="text-2xl font-bold text-gray-800">{t('agents.title')}</h1>
+          <p className="text-sm text-gray-500">{totalElements} {t('agents.total')}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleExportExcel} icon={<FaFileExcel />} className="text-green-600 border-green-300 hover:bg-green-50">Exporter Excel</Button>
-          {canCreate && <Button variant="primary" onClick={() => navigate('/formagent')} icon={<FaPlus />} className="shadow-md">Nouvel agent</Button>}
+          <Button variant="outline" onClick={handleExportExcel} icon={<FaFileExcel />} className="text-green-600 border-green-300 hover:bg-green-50">{t('agents.exportExcel')}</Button>
+          {canCreate && <Button variant="primary" onClick={() => navigate('/formagent')} icon={<FaPlus />} className="shadow-md">{t('agents.newAgent')}</Button>}
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total</p>
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('common.total')}</p>
           <p className="text-2xl font-black text-gray-800 mt-1">{totalElements}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-          <p className="text-xs font-semibold text-green-400 uppercase tracking-wider">Actifs</p>
+          <p className="text-xs font-semibold text-green-400 uppercase tracking-wider">{t('common.active')}</p>
           <p className="text-2xl font-black text-green-600 mt-1">{activeCount}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-          <p className="text-xs font-semibold text-red-400 uppercase tracking-wider">Inactifs</p>
+          <p className="text-xs font-semibold text-red-400 uppercase tracking-wider">{t('common.inactive')}</p>
           <p className="text-2xl font-black text-red-600 mt-1">{filteredAgents.length - activeCount}</p>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-          <p className="text-xs font-semibold text-blue-400 uppercase tracking-wider">Page</p>
+          <p className="text-xs font-semibold text-blue-400 uppercase tracking-wider">{t('common.page')}</p>
           <p className="text-2xl font-black text-blue-600 mt-1">{currentPage + 1}<span className="text-sm font-bold text-gray-400">/{totalPages}</span></p>
         </div>
       </div>
@@ -298,32 +300,32 @@ const Agents: React.FC = () => {
       <Card className="shadow-md border-0">
         <CardHeader className="flex flex-col gap-3">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <h2 className="text-lg font-semibold text-gray-800">Liste des agents</h2>
+            <h2 className="text-lg font-semibold text-gray-800">{t('agents.listTitle')}</h2>
             <div className="flex items-center gap-2">
               <div className="relative">
                 <FaSearch className="absolute left-3 top-3 text-gray-400" />
-                <input type="text" placeholder="Rechercher..." value={search} onChange={(e) => setSearch(e.target.value)}
+                <input type="text" placeholder={t('common.search')} value={search} onChange={(e) => setSearch(e.target.value)}
                   className="pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none w-64" />
               </div>
               <div className="relative">
                 <button onClick={() => setShowColumnPicker(!showColumnPicker)}
-                  className={`p-2 rounded-lg border transition ${showColumnPicker ? 'bg-blue-50 border-blue-300 text-blue-600' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`} title="Colonnes">
+                  className={`p-2 rounded-lg border transition ${showColumnPicker ? 'bg-blue-50 border-blue-300 text-blue-600' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`} title={t('common.columns')}>
                   <FaColumns className="h-4 w-4" />
                 </button>
                 {showColumnPicker && (
                   <div className="absolute right-0 top-full mt-1 bg-white border rounded-xl shadow-lg p-3 z-50 w-48">
-                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">Afficher colonnes</p>
+                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">{t('agents.showColumns')}</p>
                     {ALL_COLUMNS.map(col => (
                       <label key={col.key} className="flex items-center space-x-2 py-1 cursor-pointer hover:bg-gray-50 rounded px-1">
                         <input type="checkbox" checked={visibleColumns.includes(col.key)} onChange={() => toggleColumn(col.key)} className="rounded text-blue-600" />
-                        <span className="text-sm text-gray-700">{col.label}</span>
+                        <span className="text-sm text-gray-700">{t(col.label)}</span>
                       </label>
                     ))}
                   </div>
                 )}
               </div>
               <button onClick={() => setShowFilters(!showFilters)}
-                className={`p-2 rounded-lg border transition ${showFilters ? 'bg-blue-50 border-blue-300 text-blue-600' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`} title="Filtres">
+                className={`p-2 rounded-lg border transition ${showFilters ? 'bg-blue-50 border-blue-300 text-blue-600' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`} title={t('common.filters')}>
                 <FaFilter className="h-4 w-4" />
               </button>
             </div>
@@ -331,21 +333,21 @@ const Agents: React.FC = () => {
           {showFilters && (
             <div className="flex flex-wrap items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
               <select value={filterDirection} onChange={(e) => setFilterDirection(e.target.value)} className="px-3 py-1.5 text-sm border rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-                <option value="">Toutes les directions</option>
+                <option value="">{t('common.allDirections')}</option>
                 {directions.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
               <select value={filterGrade} onChange={(e) => setFilterGrade(e.target.value)} className="px-3 py-1.5 text-sm border rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-                <option value="">Tous les grades</option>
+                <option value="">{t('common.allGrades')}</option>
                 {grades.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
               <select value={filterStatut} onChange={(e) => setFilterStatut(e.target.value as any)} className="px-3 py-1.5 text-sm border rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-                <option value="all">Tous les statuts</option>
-                <option value="active">Actifs uniquement</option>
-                <option value="inactive">Inactifs uniquement</option>
+                <option value="all">{t('common.allStatus')}</option>
+                <option value="active">{t('common.activeOnly')}</option>
+                <option value="inactive">{t('common.inactiveOnly')}</option>
               </select>
               {hasActiveFilters && (
                 <button onClick={clearFilters} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition">
-                  <FaTimes className="h-3 w-3" /> Effacer les filtres
+                  <FaTimes className="h-3 w-3" /> {t('common.clearFilters')}
                 </button>
               )}
             </div>
@@ -356,14 +358,14 @@ const Agents: React.FC = () => {
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Lignes par page :</span>
+                <span className="text-sm text-gray-500">{t('common.rowsPerPage')}</span>
                 <select value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(0); }}
                   className="px-2 py-1 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                   <option value={10}>10</option><option value={20}>20</option><option value={50}>50</option><option value={100}>100</option>
                 </select>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">{currentPage * pageSize + 1}-{Math.min((currentPage + 1) * pageSize, totalElements)} sur {totalElements}</span>
+                <span className="text-sm text-gray-500">{currentPage * pageSize + 1}-{Math.min((currentPage + 1) * pageSize, totalElements)} {t('common.of')} {totalElements}</span>
                 <button onClick={() => setCurrentPage(p => Math.max(0, p - 1))} disabled={currentPage === 0}
                   className="p-2 rounded-lg border hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"><FaChevronLeft className="h-3 w-3 text-gray-600" /></button>
                 {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
@@ -393,21 +395,21 @@ const Agents: React.FC = () => {
             <button onClick={() => setPdfModal(null)} className="absolute top-3 right-3 p-1 rounded-full hover:bg-gray-100 transition">
               <FaTimes className="text-gray-500" />
             </button>
-            <h3 className="text-lg font-bold mb-4 text-gray-800">Fiche Agent</h3>
+            <h3 className="text-lg font-bold mb-4 text-gray-800">{t('agents.pdfTitle')}</h3>
             {pdfModal.loading ? (
               <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
               </div>
             ) : (
               <div className="space-y-4">
-                <p className="text-sm text-gray-600">Fiche de <strong>{pdfModal.agent.nom} {pdfModal.agent.prenom}</strong></p>
+                <p className="text-sm text-gray-600">{t('agents.pdfOf')} <strong>{pdfModal.agent.nom} {pdfModal.agent.prenom}</strong></p>
                 <div className="flex justify-center">
                   <PDFDownloadLink
                     document={<FicheAgentPDF agent={pdfModal.agent} photoBase64={pdfModal.photoBase64} />}
                     fileName={`fiche_${pdfModal.agent.nom}_${pdfModal.agent.prenom}.pdf`}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium shadow"
                   >
-                    {({ loading }) => loading ? 'Préparation...' : 'Télécharger le PDF'}
+                    {({ loading }) => loading ? t('common.preparing') : t('common.downloadPdf')}
                   </PDFDownloadLink>
                 </div>
               </div>
@@ -420,11 +422,11 @@ const Agents: React.FC = () => {
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
-            <h3 className="text-lg font-bold mb-2">Confirmer la suppression</h3>
-            <p className="text-gray-600 mb-6">Supprimer l'agent <strong>{deleteConfirm.name}</strong> ? Cette action est irreversible.</p>
+            <h3 className="text-lg font-bold mb-2">{t('agents.deleteConfirmTitle')}</h3>
+            <p className="text-gray-600 mb-6">{t('agents.deleteConfirmText')} <strong>{deleteConfirm.name}</strong></p>
             <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setDeleteConfirm(null)}>Annuler</Button>
-              <Button variant="danger" onClick={handleDelete} isLoading={deleting}>Supprimer</Button>
+              <Button variant="outline" onClick={() => setDeleteConfirm(null)}>{t('common.cancel')}</Button>
+              <Button variant="danger" onClick={handleDelete} isLoading={deleting}>{t('common.delete')}</Button>
             </div>
           </div>
         </div>

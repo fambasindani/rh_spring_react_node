@@ -19,10 +19,8 @@ export interface RapportAbsenceRow {
   agentNom?: string;
   agentPrenom?: string;
   directionNom: string;
-  dateDebut: string;
-  dateFin: string;
-  motif?: string;
-  statut: boolean;
+  dateAbsence: string;
+  statut: string;
 }
 
 interface Props {
@@ -81,7 +79,7 @@ const styles = StyleSheet.create({
 // Largeurs de colonnes (présences)
 const PW = { agent: '26%', dir: '24%', date: '12%', arr: '10%', dep: '10%', statut: '18%' };
 // Absences
-const AW = { agent: '26%', dir: '24%', du: '13%', au: '13%', motif: '24%' };
+const AW = { agent: '30%', dir: '30%', date: '20%', statut: '20%' };
 
 const hhmm = (h?: string | null) => (h ? String(h).slice(0, 5) : '-');
 
@@ -170,9 +168,8 @@ const RapportPresenceAbsencePDF: React.FC<Props> = ({ debut, fin, directionLabel
         <View style={styles.tableHeader}>
           <Text style={[styles.th, { width: AW.agent }]}>Agent</Text>
           <Text style={[styles.th, { width: AW.dir }]}>Direction</Text>
-          <Text style={[styles.th, { width: AW.du }]}>Du</Text>
-          <Text style={[styles.th, { width: AW.au }]}>Au</Text>
-          <Text style={[styles.th, { width: AW.motif }]}>Motif</Text>
+          <Text style={[styles.th, { width: AW.date }]}>Date</Text>
+          <Text style={[styles.th, { width: AW.statut }]}>Statut</Text>
         </View>
         {absences.length === 0 ? (
           <Text style={styles.empty}>Aucune absence sur la période.</Text>
@@ -181,9 +178,8 @@ const RapportPresenceAbsencePDF: React.FC<Props> = ({ debut, fin, directionLabel
             <View key={`a-${a.id}`} style={styles.tableRow} wrap={false}>
               <Text style={[styles.td, { width: AW.agent }]}>{a.agentNom} {a.agentPrenom}</Text>
               <Text style={[styles.td, { width: AW.dir }]}>{a.directionNom}</Text>
-              <Text style={[styles.td, { width: AW.du }]}>{a.dateDebut}</Text>
-              <Text style={[styles.td, { width: AW.au }]}>{a.dateFin}</Text>
-              <Text style={[styles.td, { width: AW.motif }]}>{a.motif || '-'}</Text>
+              <Text style={[styles.td, { width: AW.date }]}>{a.dateAbsence}</Text>
+              <Text style={[styles.td, { width: AW.statut }]}>{a.statut}</Text>
             </View>
           ))
         )}

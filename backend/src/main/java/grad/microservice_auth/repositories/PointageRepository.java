@@ -29,6 +29,8 @@ public interface PointageRepository extends JpaRepository<Pointage, Long> {
 
     List<Pointage> findByDatePresence(LocalDate datePresence);
 
+    List<Pointage> findByDatePresenceBetween(LocalDate start, LocalDate end);
+
     @Query("SELECT p FROM Pointage p WHERE p.datePresence BETWEEN :start AND :end ORDER BY p.horodatage DESC")
     Page<Pointage> findByDateRange(@Param("start") LocalDate start, @Param("end") LocalDate end, Pageable pageable);
 

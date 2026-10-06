@@ -208,8 +208,90 @@ public class PointageService {
                 .toList();
     }
 
-    private boolean verifierZone(BigDecimal lat, BigDecimal lng) {
-        List<ZoneTravail> zones = zoneRepo.findByActifTrue();
+    // ==================== AGRÉGATION PAR PÉRIODE (optimisée : 2 requêtes) ====================
+
+    public List<Map<String, Object>> presencesPeriode(LocalDate debut, LocalDate fin) {
+        List<Pointage> pointages = pointageRepo.findByDatePresenceBetween(debut, fin);
+        Map<String, Map<String, Object>> map = new LinkedHashMap<>();
+
+        for (Pointage p : pointages) {
+            Agent a = p.getAgent();
+            String key = p.getDatePresence().toString() + "#" + a.getId();
+            Map<String, Object> m = map.computeIfAbsent(key, k -> {
+                Map<String, Object> r = new LinkedHashMap<>();
+                r.put("agentId", a.getId());
+                r.put("agentNom", a.getNom());
+                r.put("agentPostnom", a.getPostnom());
+                r.put("agentPrenom", a.getPrenom());
+                r.put("agentMatricule", a.getMatricule());
+                r.put("datePresence", p.getDatePresence().toString());
+                r.put("heureArrivee", null);
+                r.put("heureDepart", null);
+                r.put("statut", "ABSENT");
+                r.put("minutesRetard", 0);
+                r.put("zone", null);
+                if (a.getDirection() != null) {
+                    r.put("directionId", a.getDirection().getId());
+                    r.put("direction", a.getDirection().getNom());
+                }
+                return r;
+            });
+
+            if (p.getType() == TypePointage.ARRIVEE) {
+                m.put("heureArrivee", p.getHorodatage().toLocalTime().toString().substring(0, 5));
+                m.put("minutesRetard", p.getMinutesRetard());
+                if (p.getZoneTravail() != null) m.put("zone", p.getZoneTravail().getNom());
+                if (p.getStatut() == StatutPointage.VALIDE || p.getStatut() == StatutPointage.RETARD) {
+                    m.put("statut", (p.getMinutesRetard() != null && p.getMinutesRetard() > 0) ? "RETARD" : "PRESENT");
+                } else {
+                    m.put("statut", p.getStatut().name());
+                }
+            } else if (p.getType() == TypePointage.DEPART) {
+                m.put("heureDepart", p.getHorodatage().toLocalTime().toString().substring(0, 5));
+            }
+        }
+
+        return new ArrayList<>(map.values());
+    }
+
+    public List<Map<String, Object>> absencesPeriode(LocalDate debut, LocalDate fin) {
+        List<Agent> agents = agentRepo.findByStatutTrue();
+        List<Pointage> pointages = pointageRepo.findByDatePresenceBetween(debut, fin);
+
+        // Jour -> ids des agents ayant pointé
+        Map<LocalDate, Set<Long>> presentsParJour = new HashMap<>();
+        for (Pointage p : pointages) {
+            presentsParJour
+                    .computeIfAbsent(p.getDatePresence(), k -> new HashSet<>())
+                    .add(p.getAgent().getId());
+        }
+
+        List<Map<String, Object>> out = new ArrayList<>();
+        for (LocalDate day = debut; !day.isAfter(fin); day = day.plusDays(1)) {
+            Set<Long> presents = presentsParJour.getOrDefault(day, Collections.emptySet());
+            for (Agent a : agents) {
+                if (presents.contains(a.getId())) continue;
+                Map<String, Object> m = new LinkedHashMap<>();
+                m.put("agentId", a.getId());
+                m.put("agentNom", a.getNom());
+                m.put("agentPostnom", a.getPostnom());
+                m.put("agentPrenom", a.getPrenom());
+                m.put("agentMatricule", a.getMatricule());
+                m.put("dateAbsence", day.toString());
+                m.put("statut", "ABSENT");
+                if (a.getDirection() != null) {
+                    m.put("directionId", a.getDirection().getId());
+                    m.put("direction", a.getDirection().getNom());
+                }
+                if (a.getGrade() != null) m.put("grade", a.getGrade().getSigle());
+                if (a.getFonction() != null) m.put("fonction", a.getFonction().getNom());
+                out.add(m);
+            }
+        }
+        return out;
+    }
+
+    private boolean verifierZone(BigDecimal lat, BigDecimal lng) {        List<ZoneTravail> zones = zoneRepo.findByActifTrue();
         if (zones.isEmpty()) return true;
         return zones.stream().anyMatch(z -> {
             double dist = haversine(

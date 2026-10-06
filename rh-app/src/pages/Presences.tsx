@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import pointagesService from '../services/pointages.service';
 import type { PresenceDuJour } from '../services/pointages.service';
 import Table from '../components/ui/Table';
 import type { Column } from '../components/ui/Table';
+import Pagination from '../components/ui/Pagination';
 import Button from '../components/Button';
 import Card, { CardHeader, CardBody } from '../components/ui/Card';
 import Toast from '../components/Toast';
@@ -17,6 +18,8 @@ const Presences: React.FC = () => {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info') => {
     setToast({ message, type });
@@ -40,6 +43,10 @@ const Presences: React.FC = () => {
     loadPresences();
   }, [selectedDate]);
 
+  useEffect(() => {
+    setPage(0);
+  }, [searchTerm, selectedDate]);
+
   const filteredPresences = presences.filter(p => {
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
@@ -50,6 +57,11 @@ const Presences: React.FC = () => {
       p.agentMatricule?.toLowerCase().includes(search)
     );
   });
+
+  const pagedPresences = useMemo(
+    () => filteredPresences.slice(page * pageSize, (page + 1) * pageSize),
+    [filteredPresences, page, pageSize]
+  );
 
   const stats = {
     total: presences.length,
@@ -226,7 +238,16 @@ const Presences: React.FC = () => {
               <p className="text-sm">Aucune présence enregistrée pour cette date</p>
             </div>
           ) : (
-            <Table columns={columns} data={filteredPresences} bordered className="w-full" />
+            <>
+              <Table columns={columns} data={pagedPresences} bordered className="w-full" />
+              <Pagination
+                page={page}
+                pageSize={pageSize}
+                totalItems={filteredPresences.length}
+                onPageChange={setPage}
+                onPageSizeChange={(s) => { setPageSize(s); setPage(0); }}
+              />
+            </>
           )}
         </CardBody>
       </Card>

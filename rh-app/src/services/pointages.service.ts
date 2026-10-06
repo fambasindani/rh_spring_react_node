@@ -33,6 +33,8 @@ export interface PresenceDuJour {
   pointageArrivee: PointageResponse | null;
   pointageDepart: PointageResponse | null;
   zone: string | null;
+  directionId?: number;
+  direction?: string;
 }
 
 export interface AbsenceDuJour {
@@ -44,6 +46,7 @@ export interface AbsenceDuJour {
   agentMatricule: string;
   dateAbsence: string;
   statut: string;
+  directionId?: number;
   direction?: string;
   grade?: string;
   fonction?: string;
@@ -88,6 +91,18 @@ const pointagesService = {
   getAbsencesDuJour: async (date?: string): Promise<AbsenceDuJour[]> => {
     const params = date ? `?date=${date}` : '';
     const response = await api.get(`/pointages/absences-du-jour${params}`);
+    const d = response.data;
+    return Array.isArray(d) ? d : d.data || [];
+  },
+
+  getPresencesPeriode: async (debut: string, fin: string): Promise<PresenceDuJour[]> => {
+    const response = await api.get(`/pointages/presences-periode?debut=${debut}&fin=${fin}`);
+    const d = response.data;
+    return Array.isArray(d) ? d : d.data || [];
+  },
+
+  getAbsencesPeriode: async (debut: string, fin: string): Promise<AbsenceDuJour[]> => {
+    const response = await api.get(`/pointages/absences-periode?debut=${debut}&fin=${fin}`);
     const d = response.data;
     return Array.isArray(d) ? d : d.data || [];
   },

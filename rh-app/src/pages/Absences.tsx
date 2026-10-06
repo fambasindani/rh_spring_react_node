@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import pointagesService from '../services/pointages.service';
 import type { AbsenceDuJour } from '../services/pointages.service';
 import Table from '../components/ui/Table';
 import type { Column } from '../components/ui/Table';
+import Pagination from '../components/ui/Pagination';
 import Button from '../components/Button';
 import Card, { CardHeader, CardBody } from '../components/ui/Card';
 import Toast from '../components/Toast';
@@ -15,6 +16,8 @@ const Absences: React.FC = () => {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info') => {
     setToast({ message, type });
@@ -38,6 +41,10 @@ const Absences: React.FC = () => {
     loadAbsences();
   }, [selectedDate]);
 
+  useEffect(() => {
+    setPage(0);
+  }, [searchTerm, selectedDate]);
+
   const filteredAbsences = absences.filter(a => {
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
@@ -48,6 +55,11 @@ const Absences: React.FC = () => {
       a.agentMatricule?.toLowerCase().includes(search)
     );
   });
+
+  const pagedAbsences = useMemo(
+    () => filteredAbsences.slice(page * pageSize, (page + 1) * pageSize),
+    [filteredAbsences, page, pageSize]
+  );
 
   const columns: Column<AbsenceDuJour>[] = [
     { key: 'agentId', header: '#', render: (_, _row, index) => index !== undefined ? index + 1 : '' },
@@ -138,7 +150,16 @@ const Absences: React.FC = () => {
               <p className="text-sm">Aucune absence enregistrée pour cette date</p>
             </div>
           ) : (
-            <Table columns={columns} data={filteredAbsences} bordered className="w-full" />
+            <>
+              <Table columns={columns} data={pagedAbsences} bordered className="w-full" />
+              <Pagination
+                page={page}
+                pageSize={pageSize}
+                totalItems={filteredAbsences.length}
+                onPageChange={setPage}
+                onPageSizeChange={(s) => { setPageSize(s); setPage(0); }}
+              />
+            </>
           )}
         </CardBody>
       </Card>
