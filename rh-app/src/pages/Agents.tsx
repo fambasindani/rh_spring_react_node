@@ -58,6 +58,7 @@ const Agents: React.FC = () => {
   const canCreate = isAdmin || hasDroit('CREATE_AGENT') || hasDroit('ALL_AGENTS');
   const canUpdate = isAdmin || hasDroit('UPDATE_AGENT') || hasDroit('ALL_AGENTS');
   const canDelete = isAdmin || hasDroit('DELETE_AGENT') || hasDroit('ALL_AGENTS');
+  const canExport = isAdmin || hasDroit('EXPORT_AGENT') || hasDroit('ALL_AGENTS');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -271,7 +272,7 @@ const Agents: React.FC = () => {
           <p className="text-sm text-gray-500">{totalElements} {t('agents.total')}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleExportExcel} icon={<FaFileExcel />} className="text-green-600 border-green-300 hover:bg-green-50">{t('agents.exportExcel')}</Button>
+          {canExport && <Button variant="outline" onClick={handleExportExcel} icon={<FaFileExcel />} className="text-green-600 border-green-300 hover:bg-green-50">{t('agents.exportExcel')}</Button>}
           {canCreate && <Button variant="primary" onClick={() => navigate('/formagent')} icon={<FaPlus />} className="shadow-md">{t('agents.newAgent')}</Button>}
         </div>
       </div>

@@ -19,7 +19,7 @@ import {
   Cog8ToothIcon,
   ChartBarIcon,
 } from '@heroicons/react/24/outline';
-import { FaGraduationCap, FaRegCalendarAlt, FaUserCheck, FaGavel, FaChalkboardTeacher, FaFileContract, FaStar, FaPlane } from 'react-icons/fa';
+import { FaGraduationCap, FaRegCalendarAlt, FaUserCheck, FaGavel, FaChalkboardTeacher, FaFileContract, FaStar, FaPlane, FaIdCard } from 'react-icons/fa';
 
 // NOTE: le champ "name" contient une clé de traduction (voir src/i18n/fr.json / en.json).
 export interface MenuItem {
@@ -47,6 +47,12 @@ export const menuConfig: MenuItem[] = [
       { name: 'nav.fonctions', href: '/fonctions', icon: BriefcaseIcon, droits: ['MANAGE_FONCTIONS'] },
       { name: 'nav.directions', href: '/directions', icon: DocumentTextIcon, droits: ['MANAGE_DIRECTIONS'] },
     ]
+  },
+  {
+    name: 'nav.cartes',
+    href: '/cartes',
+    icon: FaIdCard,
+    droits: ['VIEW_CARTES', 'MANAGE_CARTES', 'ADMIN'],
   },
   {
     name: 'nav.absencesConges',

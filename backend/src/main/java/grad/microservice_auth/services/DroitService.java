@@ -177,6 +177,10 @@ public class DroitService {
             Map.entry("CREATE_AGENT", "Créer un agent"),
             Map.entry("UPDATE_AGENT", "Modifier un agent"),
             Map.entry("DELETE_AGENT", "Supprimer un agent"),
+            Map.entry("EXPORT_AGENT", "Exporter la liste des agents (Excel)"),
+
+            Map.entry("VIEW_CARTES", "Voir la gestion des cartes"),
+            Map.entry("MANAGE_CARTES", "Gérer les cartes (réception, validation, perte)"),
 
             Map.entry("VIEW_GRADES", "Voir les grades"),
             Map.entry("MANAGE_GRADES", "Gérer les grades"),

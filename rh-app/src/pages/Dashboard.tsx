@@ -60,8 +60,9 @@ const Dashboard: React.FC = () => {
 
     const fetchLatestAgents = async () => {
       try {
-        const allAgents = await agentService.getAllAgents();
-        setLatestAgents(allAgents.slice(0, 5));
+        // Seulement les 5 derniers (pagination serveur) au lieu de tous les agents
+        const response = await agentService.getAgents(0, 5);
+        setLatestAgents(response.content || []);
       } catch (err) {
         console.error(err);
       } finally {

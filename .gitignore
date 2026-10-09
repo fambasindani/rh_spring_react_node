@@ -49,3 +49,9 @@ Thumbs.db
 # Fichiers temporaires (Word, Excel...)
 ~$*
 *.tmp
+
+# Archives / dumps locaux volumineux
+*.rar
+*.zip
+*.7z
+bdid

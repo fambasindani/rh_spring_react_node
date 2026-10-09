@@ -288,6 +288,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/jours-feries/**").hasAnyAuthority(ROLE_ADMIN, "MANAGE_JOURS_FERIES")
                         .requestMatchers(HttpMethod.DELETE, "/api/jours-feries/**").hasAnyAuthority(ROLE_ADMIN, "MANAGE_JOURS_FERIES")
 
+                        // ==================== GESTION DES CARTES ====================
+                        .requestMatchers(HttpMethod.GET, "/api/cartes/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/cartes/*/valider").hasAnyAuthority(ROLE_ADMIN, ROLE_RH, "MANAGE_CARTES")
+                        .requestMatchers(HttpMethod.POST, "/api/cartes/*/reception").hasAnyAuthority(ROLE_ADMIN, ROLE_RH, "MANAGE_CARTES")
+                        .requestMatchers(HttpMethod.POST, "/api/cartes").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/cartes/*/perte").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/cartes/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RH, "MANAGE_CARTES")
+                        .requestMatchers(HttpMethod.PUT, "/api/cartes/**").hasAnyAuthority(ROLE_ADMIN, ROLE_RH, "MANAGE_CARTES")
+                        .requestMatchers(HttpMethod.DELETE, "/api/cartes/**").hasAnyAuthority(ROLE_ADMIN, "MANAGE_CARTES")
+
                         // ==================== FALLBACK ====================
                         .anyRequest().authenticated()
                 )

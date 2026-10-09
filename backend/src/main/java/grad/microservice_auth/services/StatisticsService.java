@@ -153,18 +153,16 @@ public class StatisticsService {
 
         // Dernières absences
         List<DashboardStatistics.DashboardAbsence> recentAbsences = new ArrayList<>();
-        List<Absence> allAbsences = absenceRepository.findAll();
-        allAbsences.stream()
-                .sorted(Comparator.comparing(Absence::getDateDebut).reversed())
-                .limit(5)
-                .forEach(a -> recentAbsences.add(new DashboardStatistics.DashboardAbsence(
-                        a.getId(),
-                        a.getAgent().getNom(),
-                        a.getAgent().getPrenom(),
-                        a.getDateDebut() != null ? a.getDateDebut().format(fmt) : "",
-                        a.getDateFin() != null ? a.getDateFin().format(fmt) : "",
-                        a.getMotif()
-                )));
+        for (Absence a : absenceRepository.findTop5ByOrderByDateDebutDesc()) {
+            recentAbsences.add(new DashboardStatistics.DashboardAbsence(
+                    a.getId(),
+                    a.getAgent().getNom(),
+                    a.getAgent().getPrenom(),
+                    a.getDateDebut() != null ? a.getDateDebut().format(fmt) : "",
+                    a.getDateFin() != null ? a.getDateFin().format(fmt) : "",
+                    a.getMotif()
+            ));
+        }
         stats.setRecentAbsences(recentAbsences);
 
         // Dernières notifications

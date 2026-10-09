@@ -19,6 +19,8 @@ public interface AbsenceRepository extends JpaRepository<Absence, Long> {
     @Query("SELECT a FROM Absence a WHERE a.dateDebut <= :today AND a.dateFin >= :today")
     List<Absence> findActiveOnDate(@Param("today") LocalDate today);
 
+    List<Absence> findTop5ByOrderByDateDebutDesc();
+
     @Query("SELECT COUNT(a) FROM Absence a WHERE a.dateDebut <= :today AND a.dateFin >= :today")
     long countActiveOnDate(@Param("today") LocalDate today);
 }
