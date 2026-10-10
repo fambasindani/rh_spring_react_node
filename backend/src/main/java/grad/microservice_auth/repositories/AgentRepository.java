@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +47,12 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
 
 
 
+    // Nombre de retraites : >= 65 ans OU >= 35 ans de service
+    @Query("SELECT COUNT(a) FROM Agent a WHERE " +
+            "(a.dateNaissance IS NOT NULL AND a.dateNaissance <= :cutoff65) OR " +
+            "(a.dateEngagement IS NOT NULL AND a.dateEngagement <= :cutoff35)")
+    long countRetraites(@Param("cutoff65") LocalDate cutoff65, @Param("cutoff35") LocalDate cutoff35);
+
     // Recherche dynamique avec critères optionnels
     @Query("SELECT a FROM Agent a WHERE " +
             "(:keyword IS NULL OR LOWER(a.matricule) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
@@ -57,11 +64,19 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
             "AND (:gradeId IS NULL OR a.grade.id = :gradeId) " +
             "AND (:fonctionId IS NULL OR a.fonction.id = :fonctionId) " +
             "AND (:directionId IS NULL OR a.direction.id = :directionId) " +
-            "AND (:statut IS NULL OR a.statut = :statut)")
+            "AND (:statut IS NULL OR a.statut = :statut) " +
+            "AND (:sexe IS NULL OR a.sexe = :sexe) " +
+            "AND (:retraite IS NULL OR :retraite = false OR " +
+            "     (a.dateNaissance IS NOT NULL AND a.dateNaissance <= :cutoff65) OR " +
+            "     (a.dateEngagement IS NOT NULL AND a.dateEngagement <= :cutoff35))")
     Page<Agent> searchAgents(@Param("keyword") String keyword,
                              @Param("gradeId") Long gradeId,
                              @Param("fonctionId") Long fonctionId,
                              @Param("directionId") Long directionId,
                              @Param("statut") Boolean statut,
+                             @Param("sexe") String sexe,
+                             @Param("retraite") Boolean retraite,
+                             @Param("cutoff65") LocalDate cutoff65,
+                             @Param("cutoff35") LocalDate cutoff35,
                              Pageable pageable);
 }

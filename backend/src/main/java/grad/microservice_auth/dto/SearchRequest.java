@@ -11,6 +11,8 @@ public class SearchRequest {
     private Long fonctionId;
     private Long directionId;
     private Boolean statut;
+    private String sexe;
+    private Boolean retraite;
     private int page = 0;
     @JsonAlias("per_page")
     private int size = 10;

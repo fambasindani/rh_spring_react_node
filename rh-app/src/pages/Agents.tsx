@@ -76,18 +76,7 @@ const Agents: React.FC = () => {
       if (filterStatut === 'active') criteria.statut = true;
       if (filterStatut === 'inactive') criteria.statut = false;
       const response = await agentService.searchAgents(criteria);
-      const mapped = response.content.map((item: any) => ({
-        id: item.id, matricule: item.matricule, nom: item.nom, postnom: item.postnom,
-        prenom: item.prenom, sexe: item.sexe, dateNaissance: item.dateNaissance,
-        email: item.email, telephone: item.telephone, etatCivil: item.etatCivil,
-        statut: item.statut, referenceEngagement: item.referenceEngagement,
-        dateEngagement: item.dateEngagement, province: item.province,
-        territoire: item.territoire, village: item.village, photo: item.photo,
-        grade: { id: item.idGrade, sigle: item.gradeSigle, nom: item.gradeNom },
-        fonction: { id: item.idFonction, nom: item.fonctionNom },
-        direction: { id: item.idDirection, sigle: item.directionSigle, nom: item.directionNom },
-      })) as Agent[];
-      setAgents(mapped);
+      setAgents(response.content);
       setTotalElements(response.totalElements);
       setTotalPages(response.totalPages);
     } catch (err) {

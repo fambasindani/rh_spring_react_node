@@ -78,6 +78,10 @@ public class StatisticsService {
         stats.setInactiveAgents(inactive);
         stats.setAgentsByStatut(Map.of("Actif", active, "Inactif", inactive));
 
+        // Retraites : >= 65 ans OU >= 35 ans de service
+        LocalDate now = LocalDate.now();
+        stats.setRetiredAgents(agentRepository.countRetraites(now.minusYears(65), now.minusYears(35)));
+
         // Répartition par sexe
         Map<String, Long> agentsBySexe = new HashMap<>();
         List<Object[]> sexeCounts = agentRepository.countBySexe();

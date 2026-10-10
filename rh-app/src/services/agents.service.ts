@@ -35,6 +35,30 @@ interface RawAgent {
 import type { PageResponse } from '../types/pagination';
 export type { PageResponse };
 
+// Convertit la réponse brute du backend (champs à plat) en Agent (relations imbriquées)
+export const mapRawAgent = (item: any): Agent => ({
+  id: item.id,
+  matricule: item.matricule,
+  nom: item.nom,
+  postnom: item.postnom,
+  prenom: item.prenom,
+  sexe: item.sexe,
+  dateNaissance: item.dateNaissance,
+  email: item.email,
+  telephone: item.telephone,
+  etatCivil: item.etatCivil,
+  statut: item.statut,
+  referenceEngagement: item.referenceEngagement,
+  dateEngagement: item.dateEngagement,
+  province: item.province,
+  territoire: item.territoire,
+  village: item.village,
+  photo: item.photo,
+  grade: { id: item.idGrade, sigle: item.gradeSigle, nom: item.gradeNom },
+  fonction: { id: item.idFonction, nom: item.fonctionNom },
+  direction: { id: item.idDirection, sigle: item.directionSigle, nom: item.directionNom },
+});
+
 export const agentService = {
   // Récupérer tous les agents (sans pagination)
   async getAllAgents(): Promise<Agent[]> {
@@ -80,7 +104,7 @@ export const agentService = {
     const response = await api.get(`/agents?page=${page + 1}&per_page=${size}`);
     const d = response.data;
     return {
-      content: d.data || [],
+      content: (d.data || []).map(mapRawAgent),
       pageNumber: d.current_page - 1,
       pageSize: d.per_page,
       totalElements: d.total,
@@ -141,6 +165,8 @@ export const agentService = {
     fonctionId?: number;
     directionId?: number;
     statut?: boolean;
+    sexe?: string;
+    retraite?: boolean;
     page?: number;
     size?: number;
   }): Promise<PageResponse<Agent>> {
@@ -151,7 +177,7 @@ export const agentService = {
     });
     const d = response.data;
     return {
-      content: d.data || [],
+      content: (d.data || []).map(mapRawAgent),
       pageNumber: d.current_page - 1,
       pageSize: d.per_page,
       totalElements: d.total,

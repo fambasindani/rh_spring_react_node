@@ -24,6 +24,7 @@ public class DashboardStatistics {
     private List<BirthdayMonth> birthdaysThisYear;
     private long activeAgents;
     private long inactiveAgents;
+    private long retiredAgents;
 
     // Nouvelles sections dashboard
     private long pendingConges;

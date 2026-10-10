@@ -207,6 +207,8 @@ public class AgentController {
                 request.getFonctionId(),
                 request.getDirectionId(),
                 request.getStatut(),
+                request.getSexe(),
+                request.getRetraite(),
                 request.getPage(),
                 request.getSize()
         ));

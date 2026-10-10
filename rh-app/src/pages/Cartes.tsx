@@ -18,9 +18,12 @@ import type { Agent } from '../types/agent';
 import { directionService } from '../services/direction.service';
 import type { Direction } from '../services/direction.service';
 import RapportCartesPDF from '../components/pdf/RapportCartesPDF';
+import CarteAgentPDF from '../components/pdf/CarteAgentPDF';
+import { BACKEND_BASE_URL } from '../config/constants';
+import * as QRCode from 'qrcode';
 import {
   FaPlus, FaSearch, FaSync, FaIdCard, FaUserCheck, FaHourglassHalf, FaUserTimes,
-  FaCheck, FaBoxOpen, FaTrash, FaFileExcel, FaFilePdf,
+  FaCheck, FaBoxOpen, FaTrash, FaFileExcel, FaFilePdf, FaPrint,
 } from 'react-icons/fa';
 
 const STATUTS: { key: CarteStatut; label: string; color: string }[] = [
@@ -29,6 +32,40 @@ const STATUTS: { key: CarteStatut; label: string; color: string }[] = [
   { key: 'VALIDEE', label: 'Détenteurs', color: 'bg-emerald-100 text-emerald-700' },
   { key: 'PERDUE', label: 'Cartes perdues', color: 'bg-rose-100 text-rose-700' },
 ];
+
+// Télécharge une image distante et la réduit (max 400px) pour alléger le PDF de la carte
+const photoToDataUrl = async (url: string): Promise<string> => {
+  const resp = await fetch(url);
+  const blob = await resp.blob();
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+  return new Promise<string>((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const max = 400;
+        const scale = Math.min(1, max / Math.max(img.width, img.height));
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { resolve(dataUrl); return; }
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      } catch {
+        resolve(dataUrl);
+      }
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+};
 
 const badge = (statut: CarteStatut) => {
   const s = STATUTS.find(x => x.key === statut);
@@ -148,6 +185,52 @@ const Cartes: React.FC = () => {
     }
   };
 
+  // Impression de la carte (professionnelle) d'un agent
+  const printCard = async (c: Carte) => {
+    if (!c.idAgent) return;
+    try {
+      const details = await agentService.getAgentDetails(c.idAgent);
+
+      // Photo -> base64
+      let photoBase64: string | undefined;
+      if (details.photo) {
+        try {
+          const url = details.photo.startsWith('http') ? details.photo : `${BACKEND_BASE_URL}${details.photo}`;
+          photoBase64 = await photoToDataUrl(url);
+        } catch { /* photo indisponible */ }
+      }
+
+      // QR de vérification
+      const payload = `DGRAD|${details.matricule}|${c.numeroCarte || ''}|${details.nom} ${details.postnom || ''} ${details.prenom}`;
+      const qrDataUrl = await QRCode.toDataURL(payload, { margin: 0, width: 128 });
+
+      const blob = await pdf(
+        <CarteAgentPDF
+          agent={{
+            nom: details.nom, postnom: details.postnom, prenom: details.prenom,
+            matricule: details.matricule, gradeNom: details.gradeNom, gradeSigle: details.gradeSigle,
+            fonctionNom: details.fonctionNom, directionNom: details.directionNom,
+          }}
+          carte={{ numeroCarte: c.numeroCarte, dateValidation: c.dateValidation, dateReception: c.dateReception, dateDemande: c.dateDemande }}
+          photoBase64={photoBase64}
+          qrDataUrl={qrDataUrl}
+        />
+      ).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      const win = window.open(url, '_blank');
+      if (!win) {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Carte_${details.matricule || c.idAgent}.pdf`;
+        link.click();
+      }
+    } catch (e) {
+      console.error(e);
+      showToast("Erreur lors de la génération de la carte", 'error');
+    }
+  };
+
   const columns: Column<Carte>[] = [
     { key: 'id', header: '#', render: (_, _r, i) => (i !== undefined ? i + 1 : '') },
     {
@@ -177,6 +260,11 @@ const Cartes: React.FC = () => {
           {r.statut === 'RECUE' && canManage && (
             <button onClick={() => setConfirmAction({ type: 'valider', carte: r })} title="Valider l'accusé de réception" className="p-2 rounded-lg hover:bg-emerald-50 text-emerald-600">
               <FaCheck />
+            </button>
+          )}
+          {(r.statut === 'VALIDEE' || r.statut === 'RECUE') && canManage && (
+            <button onClick={() => printCard(r)} title="Imprimer la carte" className="p-2 rounded-lg hover:bg-indigo-50 text-indigo-600">
+              <FaPrint />
             </button>
           )}
           {(r.statut === 'VALIDEE' || r.statut === 'DEMANDE') && canManage && (

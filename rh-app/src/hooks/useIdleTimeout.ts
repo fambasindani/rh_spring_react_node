@@ -4,7 +4,7 @@ import { useAuth } from './useAuth';
 
 export const useIdleTimeout = (timeoutMinutes: number = 10) => {
   const { signOut } = useAuth();
-  const timerRef = useRef<number | null>(null);   // ← changer le type
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const resetTimer = () => {
     if (timerRef.current) clearTimeout(timerRef.current);

@@ -41,6 +41,7 @@ export interface DashboardStatistics {
   birthdaysThisYear: { month: number; count: number }[];
   activeAgents: number;
   inactiveAgents: number;
+  retiredAgents: number;
   pendingConges: number;
   todayAbsences: number;
   todayPresences: number;

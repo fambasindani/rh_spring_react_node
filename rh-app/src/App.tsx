@@ -6,6 +6,7 @@ import AdminLayout from './layouts/AdminLayout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Agents from './pages/Agents';
+import AgentsListe from './pages/AgentsListe';
 import Cartes from './pages/Cartes';
 import FormAgent from './pages/FormAgent';
 import AgentDetails from './pages/AgentDetail';
@@ -51,6 +52,7 @@ function AppContent() {
       <Route path="/" element={<PrivateRoute><AdminLayout /></PrivateRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="agents" element={<Agents />} />
+        <Route path="agents-liste" element={<AgentsListe />} />
         <Route path="cartes" element={<Cartes />} />
         <Route path="formagent" element={<FormAgent />} />
         <Route path="agents/:id" element={<AgentDetails />} />

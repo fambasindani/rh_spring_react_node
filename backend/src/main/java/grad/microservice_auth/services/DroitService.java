@@ -178,6 +178,7 @@ public class DroitService {
             Map.entry("UPDATE_AGENT", "Modifier un agent"),
             Map.entry("DELETE_AGENT", "Supprimer un agent"),
             Map.entry("EXPORT_AGENT", "Exporter la liste des agents (Excel)"),
+            Map.entry("VIEW_AGENT_LISTS", "Voir les listes d'agents du tableau de bord (retraités, genre, grade, direction)"),
 
             Map.entry("VIEW_CARTES", "Voir la gestion des cartes"),
             Map.entry("MANAGE_CARTES", "Gérer les cartes (réception, validation, perte)"),

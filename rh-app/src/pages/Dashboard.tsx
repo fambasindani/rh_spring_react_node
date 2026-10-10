@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { statisticsService } from '../services/statistics.service';
 import type { DashboardStatistics } from '../types/dashboard';
 import { agentService } from '../services/agents.service';
 import type { Agent } from '../types/agent';
 import api from '../types/api';
 import { DashboardSkeleton } from '../components/ui/Skeleton';
+import { useAuth } from '../hooks/useAuth';
+import { gradeService } from '../services/grades.service';
+import { directionService } from '../services/direction.service';
+import { fonctionService } from '../services/fonction.service';
 import {
   BriefcaseIcon,
   DocumentTextIcon,
   UserCircleIcon,
   UsersIcon,
+  UserMinusIcon,
   ChartBarIcon,
   MapPinIcon,
   ArrowTrendingUpIcon,
@@ -39,11 +45,46 @@ const itemVariants = {
 };
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes('ADMIN') ?? false;
+  const hasDroit = (d: string) => (user?.droits || []).includes(d);
+  const canViewLists = isAdmin || hasDroit('VIEW_AGENT_LISTS') || hasDroit('VIEW_AGENTS');
+
   const [stats, setStats] = useState<DashboardStatistics | null>(null);
   const [latestAgents, setLatestAgents] = useState<Agent[]>([]);
   const [loadingStats, setLoadingStats] = useState(true);
   const [loadingAgents, setLoadingAgents] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [gradesIndex, setGradesIndex] = useState<{ id: number; sigle: string; nom: string }[]>([]);
+  const [directionsIndex, setDirectionsIndex] = useState<{ id: number; sigle: string; nom: string }[]>([]);
+  const [fonctionsIndex, setFonctionsIndex] = useState<{ id: number; nom: string }[]>([]);
+
+  const openList = (title: string, filters: { sexe?: 'M' | 'F'; gradeId?: number; fonctionId?: number; retraite?: boolean; directionId?: number | 'all' }) => {
+    if (!canViewLists) return;
+    const p = new URLSearchParams();
+    p.set('title', title);
+    if (filters.sexe) p.set('sexe', filters.sexe);
+    if (filters.gradeId) p.set('gradeId', String(filters.gradeId));
+    if (filters.fonctionId) p.set('fonctionId', String(filters.fonctionId));
+    if (filters.directionId && filters.directionId !== 'all') p.set('directionId', String(filters.directionId));
+    if (filters.retraite) p.set('retraite', 'true');
+    navigate(`/agents-liste?${p.toString()}`);
+  };
+
+  useEffect(() => {
+    gradeService.getAll().then((g) => setGradesIndex(g.map(x => ({ id: x.id, sigle: x.sigle, nom: x.nom })))).catch(() => {});
+    directionService.getAll().then(setDirectionsIndex).catch(() => {});
+    fonctionService.getAll().then((f) => setFonctionsIndex(f.map(x => ({ id: x.id, nom: x.nom })))).catch(() => {});
+  }, []);
+
+  const sigleFromKey = (key: string): string => {
+    const m = key.match(/\(([^)]+)\)\s*$/);
+    return (m ? m[1] : key).trim();
+  };
+  const gradeIdFromKey = (key: string) => gradesIndex.find(g => g.sigle === sigleFromKey(key))?.id;
+  const directionIdFromKey = (key: string) => directionsIndex.find(d => d.sigle === sigleFromKey(key))?.id;
+  const fonctionIdFromName = (name: string) => fonctionsIndex.find(f => f.nom === name)?.id;
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -91,15 +132,17 @@ const Dashboard: React.FC = () => {
   }
 
   // Configuration Premium des Cartes KPI (Couleurs injectées de façon sécurisée pour Tailwind)
-  const statBoxes = [
-    { label: 'Effectif Global', value: stats.totalAgents, subtitle: 'Agents enregistrés', icon: UsersIcon, theme: 'from-blue-500/10 to-indigo-500/5 text-blue-600 ring-blue-500/10' },
-    { label: 'Personnel Actif', value: stats.activeAgents, subtitle: 'En poste actuellement', icon: UserCircleIcon, theme: 'from-emerald-500/10 to-teal-500/5 text-emerald-600 ring-emerald-500/10' },
-    { label: 'Directions', value: stats.totalDirections, subtitle: 'Structures internes', icon: BriefcaseIcon, theme: 'from-amber-500/10 to-orange-500/5 text-amber-600 ring-amber-500/10' },
-    { label: 'Grades Indexés', value: stats.totalGrades, subtitle: 'Niveaux hiérarchiques', icon: DocumentTextIcon, theme: 'from-rose-500/10 to-red-500/5 text-rose-600 ring-rose-500/10' },
+  const statBoxes: { label: string; value: React.ReactNode; subtitle: string; icon: any; theme: string; onClick?: () => void }[] = [
+    { label: 'Effectif Global', value: stats.totalAgents, subtitle: 'Agents enregistrés', icon: UsersIcon, theme: 'from-blue-500/10 to-indigo-500/5 text-blue-600 ring-blue-500/10', onClick: () => openList('Tous les agents', {}) },
+    { label: 'Personnel Actif', value: stats.activeAgents, subtitle: 'En poste actuellement', icon: UserCircleIcon, theme: 'from-emerald-500/10 to-teal-500/5 text-emerald-600 ring-emerald-500/10', onClick: () => openList('Personnel actif', {}) },
+    { label: 'Directions', value: stats.totalDirections, subtitle: 'Structures internes', icon: BriefcaseIcon, theme: 'from-amber-500/10 to-orange-500/5 text-amber-600 ring-amber-500/10', onClick: () => openList('Agents par direction', {}) },
+    { label: 'Grades Indexés', value: stats.totalGrades, subtitle: 'Niveaux hiérarchiques', icon: DocumentTextIcon, theme: 'from-rose-500/10 to-red-500/5 text-rose-600 ring-rose-500/10', onClick: () => openList('Agents par grade', {}) },
+    { label: 'Retraités', value: stats.retiredAgents ?? 0, subtitle: '65 ans ou 35 ans de service', icon: UserMinusIcon, theme: 'from-slate-500/10 to-gray-500/5 text-slate-600 ring-slate-500/10', onClick: () => openList('Agents retraités', { retraite: true }) },
   ];
 
   const gradeData = Object.entries(stats.agentsByGrade || {});
   const directionData = Object.entries(stats.agentsByDirection || {});
+  const fonctData = Object.entries(stats.agentsByFonction || {});
   const hireData = stats.hireEvolution || [];
   const birthdayData = stats.birthdaysThisYear || [];
   const sexeData = Object.entries(stats.agentsBySexe || {});
@@ -130,7 +173,7 @@ const Dashboard: React.FC = () => {
       </motion.div>
 
       {/* --- BLOCS KPI --- */}
-      <motion.div variants={containerVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <motion.div variants={containerVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         {statBoxes.map((stat, i) => {
           const Icon = stat.icon;
           return (
@@ -138,7 +181,9 @@ const Dashboard: React.FC = () => {
               key={i}
               variants={itemVariants}
               whileHover={{ y: -5, transition: { duration: 0.15 } }}
-              className={`relative overflow-hidden bg-gradient-to-br ${stat.theme.split(' text-')[0]} bg-white border border-gray-200/60 rounded-2xl p-6 ring-1 ${stat.theme.split(' text-')[2]} shadow-sm hover:shadow-md transition-all duration-200`}
+              onClick={stat.onClick}
+              title={stat.onClick ? 'Voir la liste' : undefined}
+              className={`relative overflow-hidden bg-gradient-to-br ${stat.theme.split(' text-')[0]} bg-white border border-gray-200/60 rounded-2xl p-6 ring-1 ${stat.theme.split(' text-')[2]} shadow-sm hover:shadow-md transition-all duration-200 ${stat.onClick ? 'cursor-pointer' : ''}`}
             >
               <div className="flex justify-between items-start">
                 <div className="space-y-3">
@@ -168,7 +213,7 @@ const Dashboard: React.FC = () => {
             
             <div className="flex flex-col sm:flex-row xl:flex-col gap-6 justify-center items-center py-6">
               {/* Hommes */}
-              <div className="flex items-center space-x-4 bg-gray-50/70 p-4 rounded-xl border border-gray-100 w-full max-w-[240px]">
+              <div onClick={() => openList('Hommes', { sexe: 'M' })} title="Voir la liste" className={`flex items-center space-x-4 bg-gray-50/70 p-4 rounded-xl border border-gray-100 w-full max-w-[240px] ${canViewLists ? 'cursor-pointer hover:border-blue-200' : ''}`}>
                 <div className="relative w-16 h-16 shrink-0">
                   <svg className="w-full h-full" viewBox="0 0 40 40">
                     <circle cx="20" cy="20" r="16" fill="none" stroke="#E2E8F0" strokeWidth="4" />
@@ -183,7 +228,7 @@ const Dashboard: React.FC = () => {
               </div>
 
               {/* Femmes */}
-              <div className="flex items-center space-x-4 bg-gray-50/70 p-4 rounded-xl border border-gray-100 w-full max-w-[240px]">
+              <div onClick={() => openList('Femmes', { sexe: 'F' })} title="Voir la liste" className={`flex items-center space-x-4 bg-gray-50/70 p-4 rounded-xl border border-gray-100 w-full max-w-[240px] ${canViewLists ? 'cursor-pointer hover:border-blue-200' : ''}`}>
                 <div className="relative w-16 h-16 shrink-0">
                   <svg className="w-full h-full" viewBox="0 0 40 40">
                     <circle cx="20" cy="20" r="16" fill="none" stroke="#E2E8F0" strokeWidth="4" />
@@ -208,7 +253,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="space-y-4 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
             {gradeData.map(([grade, count]) => (
-              <div key={grade} className="group">
+              <div key={grade} onClick={() => openList(`Agents — ${grade}`, { gradeId: gradeIdFromKey(grade) })} title="Voir la liste" className={`group ${canViewLists ? 'cursor-pointer' : ''}`}>
                 <div className="flex justify-between items-center text-xs mb-1.5">
                   <span className="font-semibold text-gray-600 group-hover:text-gray-900 transition-colors">{grade}</span>
                   <span className="font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded-md">{count}</span>
@@ -229,13 +274,34 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="space-y-4 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
             {directionData.map(([dir, count]) => (
-              <div key={dir} className="group">
+              <div key={dir} onClick={() => openList(`Agents — ${dir}`, { directionId: directionIdFromKey(dir) })} title="Voir la liste" className={`group ${canViewLists ? 'cursor-pointer' : ''}`}>
                 <div className="flex justify-between items-center text-xs mb-1.5">
                   <span className="font-semibold text-gray-600 group-hover:text-gray-900 transition-colors truncate max-w-[200px]">{dir}</span>
                   <span className="font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">{count}</span>
                 </div>
                 <div className="w-full bg-indigo-50 h-1.5 rounded-full overflow-hidden">
                   <div className="h-full rounded-full bg-indigo-600 transition-all duration-500" style={{ width: `${safePercent(count)}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Fonctions */}
+        <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-gray-200/60 p-6 shadow-sm xl:col-span-1">
+          <div className="flex items-center space-x-2 pb-4 border-b border-gray-100 mb-5">
+            <BriefcaseIcon className="h-4 w-4 text-gray-400" />
+            <h2 className="text-sm font-bold tracking-tight text-gray-800 uppercase">Volume par Fonctions</h2>
+          </div>
+          <div className="space-y-4 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
+            {fonctData.map(([fn, count]) => (
+              <div key={fn} onClick={() => openList(`Agents — ${fn}`, { fonctionId: fonctionIdFromName(fn) })} title="Voir la liste" className={`group ${canViewLists ? 'cursor-pointer' : ''}`}>
+                <div className="flex justify-between items-center text-xs mb-1.5">
+                  <span className="font-semibold text-gray-600 group-hover:text-gray-900 transition-colors truncate max-w-[200px]">{fn}</span>
+                  <span className="font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-md">{count}</span>
+                </div>
+                <div className="w-full bg-teal-50 h-1.5 rounded-full overflow-hidden">
+                  <div className="h-full rounded-full bg-teal-600 transition-all duration-500" style={{ width: `${safePercent(count)}%` }} />
                 </div>
               </div>
             ))}

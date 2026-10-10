@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -288,9 +289,14 @@ public class AgentService {
     }
 
     // ========== RECHERCHE ==========
-    public PageResponse<AgentResponse> searchAgents(String keyword, Long gradeId, Long fonctionId, Long directionId, Boolean statut, int page, int size) {
+    public PageResponse<AgentResponse> searchAgents(String keyword, Long gradeId, Long fonctionId, Long directionId, Boolean statut,
+                                                    String sexe, Boolean retraite, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<Agent> agentPage = agentRepository.searchAgents(keyword, gradeId, fonctionId, directionId, statut, pageable);
+        LocalDate cutoff65 = LocalDate.now().minusYears(65);
+        LocalDate cutoff35 = LocalDate.now().minusYears(35);
+        String sexeFilter = (sexe != null && !sexe.isBlank()) ? sexe : null;
+        Page<Agent> agentPage = agentRepository.searchAgents(keyword, gradeId, fonctionId, directionId, statut,
+                sexeFilter, retraite, cutoff65, cutoff35, pageable);
         List<AgentResponse> content = agentPage.getContent().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
