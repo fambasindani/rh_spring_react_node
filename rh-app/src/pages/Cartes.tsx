@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import { pdf } from '@react-pdf/renderer';
 import Card, { CardHeader, CardBody } from '../components/ui/Card';
@@ -8,6 +8,7 @@ import type { Column } from '../components/ui/Table';
 import Pagination from '../components/ui/Pagination';
 import Modal from '../components/ui/Modal';
 import Input from '../components/ui/Input';
+import SearchableSelect from '../components/SearchableSelect';
 import Toast from '../components/Toast';
 import { TableSkeleton } from '../components/ui/Skeleton';
 import { useAuth } from '../hooks/useAuth';
@@ -86,7 +87,6 @@ const Cartes: React.FC = () => {
   const [directions, setDirections] = useState<Direction[]>([]);
   const [cartes, setCartes] = useState<Carte[]>([]);
   const [total, setTotal] = useState(0);
-  const [agents, setAgents] = useState<Agent[]>([]);
   const [stats, setStats] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
@@ -130,7 +130,6 @@ const Cartes: React.FC = () => {
   useEffect(() => { setPage(0); }, [statut, directionId]);
 
   useEffect(() => {
-    agentService.getAllAgents().then(setAgents).catch(() => {});
     directionService.getAll().then(setDirections).catch(() => {});
   }, []);
 
@@ -381,7 +380,7 @@ const Cartes: React.FC = () => {
       </Card>
 
       {/* Modal nouvelle demande */}
-      <NewCarteModal isOpen={showNew} onClose={() => setShowNew(false)} agents={agents}
+      <NewCarteModal isOpen={showNew} onClose={() => setShowNew(false)}
         onSaved={() => { setShowNew(false); setStatut('DEMANDE'); setPage(0); load(); showToast('Demande enregistrée', 'success'); }}
         onError={(m) => showToast(m, 'error')} />
 
@@ -426,19 +425,48 @@ const Cartes: React.FC = () => {
 
 /* ------------------------- Modales ------------------------- */
 
-const NewCarteModal: React.FC<{ isOpen: boolean; onClose: () => void; agents: Agent[]; onSaved: () => void; onError: (m: string) => void }> = ({ isOpen, onClose, agents, onSaved, onError }) => {
-  const [idAgent, setIdAgent] = useState('');
+const NewCarteModal: React.FC<{ isOpen: boolean; onClose: () => void; onSaved: () => void; onError: (m: string) => void }> = ({ isOpen, onClose, onSaved, onError }) => {
+  const [idAgent, setIdAgent] = useState<number | null>(null);
+  const [options, setOptions] = useState<{ value: number; label: string }[]>([]);
+  const [loadingAgents, setLoadingAgents] = useState(false);
   const [observation, setObservation] = useState('');
   const [saving, setSaving] = useState(false);
+  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => { if (isOpen) { setIdAgent(''); setObservation(''); } }, [isOpen]);
+  const searchAgents = (keyword: string) => {
+    setLoadingAgents(true);
+    agentService.searchAgents({ keyword: keyword || undefined, page: 0, size: 20 })
+      .then((res) => setOptions((res.content || []).map((a) => ({
+        value: a.id,
+        label: `${a.nom} ${a.postnom} ${a.prenom} (${a.matricule})`,
+      }))))
+      .catch(() => setOptions([]))
+      .finally(() => setLoadingAgents(false));
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      setIdAgent(null);
+      setObservation('');
+      setOptions([]);
+      searchAgents('');
+    }
+    return () => { if (debounce.current) clearTimeout(debounce.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  const onInputChange = (val: string, meta: { action: string }) => {
+    if (meta.action !== 'input-change') return;
+    if (debounce.current) clearTimeout(debounce.current);
+    debounce.current = setTimeout(() => searchAgents(val), 350);
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!idAgent) { onError('Sélectionnez un agent'); return; }
     setSaving(true);
     try {
-      await cartesService.create({ idAgent: Number(idAgent), observation });
+      await cartesService.create({ idAgent, observation });
       onSaved();
     } catch (err: any) {
       onError(err?.response?.data?.message || "Erreur lors de l'enregistrement");
@@ -448,14 +476,16 @@ const NewCarteModal: React.FC<{ isOpen: boolean; onClose: () => void; agents: Ag
   return (
     <Modal isOpen={isOpen} onClose={onClose} closeOnBackdrop={false} title="Nouvelle demande de carte">
       <form onSubmit={submit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">Agent demandeur</label>
-          <select value={idAgent} onChange={(e) => setIdAgent(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 text-sm">
-            <option value="">-- Sélectionner un agent --</option>
-            {agents.map(a => <option key={a.id} value={a.id}>{a.nom} {a.postnom} {a.prenom} ({a.matricule})</option>)}
-          </select>
-        </div>
+        <SearchableSelect
+          label="Agent demandeur"
+          required
+          options={options}
+          value={idAgent}
+          onChange={setIdAgent}
+          isLoading={loadingAgents}
+          onInputChange={onInputChange}
+          placeholder="Rechercher un agent (nom, matricule...)"
+        />
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">Observation</label>
           <textarea value={observation} onChange={(e) => setObservation(e.target.value)} rows={3}

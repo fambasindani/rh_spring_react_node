@@ -140,10 +140,13 @@ const Dashboard: React.FC = () => {
     { label: 'Retraités', value: stats.retiredAgents ?? 0, subtitle: '65 ans ou 35 ans de service', icon: UserMinusIcon, theme: 'from-slate-500/10 to-gray-500/5 text-slate-600 ring-slate-500/10', onClick: () => openList('Agents retraités', { retraite: true }) },
   ];
 
-  const gradeData = Object.entries(stats.agentsByGrade || {});
-  const directionData = Object.entries(stats.agentsByDirection || {});
-  const fonctData = Object.entries(stats.agentsByFonction || {});
-  const hireData = stats.hireEvolution || [];
+  const top5 = (arr: [string, any][]): [string, any][] =>
+    [...arr].sort((a, b) => (Number(b[1]) || 0) - (Number(a[1]) || 0)).slice(0, 5);
+
+  const gradeData = top5(Object.entries(stats.agentsByGrade || {}));
+  const directionData = top5(Object.entries(stats.agentsByDirection || {}));
+  const fonctData = top5(Object.entries(stats.agentsByFonction || {}));
+  const hireData = [...(stats.hireEvolution || [])].sort((a, b) => b.count - a.count).slice(0, 5);
   const birthdayData = stats.birthdaysThisYear || [];
   const sexeData = Object.entries(stats.agentsBySexe || {});
 
@@ -249,7 +252,7 @@ const Dashboard: React.FC = () => {
         <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-gray-200/60 p-6 shadow-sm xl:col-span-1">
           <div className="flex items-center space-x-2 pb-4 border-b border-gray-100 mb-5">
             <ChartBarIcon className="h-4 w-4 text-gray-400" />
-            <h2 className="text-sm font-bold tracking-tight text-gray-800 uppercase">Volume par Grades</h2>
+            <h2 className="text-sm font-bold tracking-tight text-gray-800 uppercase">Volume par Grades (Top 5)</h2>
           </div>
           <div className="space-y-4 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
             {gradeData.map(([grade, count]) => (
@@ -270,7 +273,7 @@ const Dashboard: React.FC = () => {
         <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-gray-200/60 p-6 shadow-sm xl:col-span-1">
           <div className="flex items-center space-x-2 pb-4 border-b border-gray-100 mb-5">
             <MapPinIcon className="h-4 w-4 text-gray-400" />
-            <h2 className="text-sm font-bold tracking-tight text-gray-800 uppercase">Volume par Directions</h2>
+            <h2 className="text-sm font-bold tracking-tight text-gray-800 uppercase">Volume par Directions (Top 5)</h2>
           </div>
           <div className="space-y-4 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
             {directionData.map(([dir, count]) => (
@@ -291,7 +294,7 @@ const Dashboard: React.FC = () => {
         <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-gray-200/60 p-6 shadow-sm xl:col-span-1">
           <div className="flex items-center space-x-2 pb-4 border-b border-gray-100 mb-5">
             <BriefcaseIcon className="h-4 w-4 text-gray-400" />
-            <h2 className="text-sm font-bold tracking-tight text-gray-800 uppercase">Volume par Fonctions</h2>
+            <h2 className="text-sm font-bold tracking-tight text-gray-800 uppercase">Volume par Fonctions (Top 5)</h2>
           </div>
           <div className="space-y-4 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
             {fonctData.map(([fn, count]) => (
@@ -315,7 +318,7 @@ const Dashboard: React.FC = () => {
         <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-gray-200/60 p-6 shadow-sm">
           <div className="flex items-center space-x-2 pb-4 border-b border-gray-100 mb-5">
             <ArrowTrendingUpIcon className="h-4 w-4 text-gray-400" />
-            <h2 className="text-sm font-bold tracking-tight text-gray-800 uppercase">Courbe d'engagements</h2>
+            <h2 className="text-sm font-bold tracking-tight text-gray-800 uppercase">Courbe d'engagements (Top 5)</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {hireData.map(({ year, count }) => (
@@ -469,13 +472,16 @@ const Dashboard: React.FC = () => {
       {/* --- CONGÉS, ABSENCES & NOTIFICATIONS --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Derniers congés */}
-        <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+        <motion.div variants={itemVariants} onClick={() => navigate('/conges')} className="cursor-pointer bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
           <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/40 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <ClockIcon className="h-4 w-4 text-amber-500" />
               <h3 className="text-xs font-bold tracking-tight text-gray-800 uppercase">Derniers Congés</h3>
             </div>
-            <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">{stats.pendingConges} en attente</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">{stats.pendingConges} en attente</span>
+              <span className="text-[10px] font-semibold text-blue-600 hover:underline">Voir tout →</span>
+            </div>
           </div>
           <div className="divide-y divide-gray-50">
             {stats.recentConges && stats.recentConges.length > 0 ? stats.recentConges.map((c) => (
@@ -502,13 +508,16 @@ const Dashboard: React.FC = () => {
         </motion.div>
 
         {/* Dernières absences */}
-        <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+        <motion.div variants={itemVariants} onClick={() => navigate('/absences')} className="cursor-pointer bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
           <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/40 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <ExclamationTriangleIcon className="h-4 w-4 text-rose-500" />
               <h3 className="text-xs font-bold tracking-tight text-gray-800 uppercase">Dernières Absences</h3>
             </div>
-            <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">{stats.todayAbsences} aujourd'hui</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">{stats.todayAbsences} aujourd'hui</span>
+              <span className="text-[10px] font-semibold text-blue-600 hover:underline">Voir tout →</span>
+            </div>
           </div>
           <div className="divide-y divide-gray-50">
             {stats.recentAbsences && stats.recentAbsences.length > 0 ? stats.recentAbsences.map((a) => (
@@ -531,13 +540,16 @@ const Dashboard: React.FC = () => {
         </motion.div>
 
         {/* Dernières notifications */}
-        <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+        <motion.div variants={itemVariants} onClick={() => navigate('/notifications')} className="cursor-pointer bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
           <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/40 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <BellIcon className="h-4 w-4 text-blue-500" />
               <h3 className="text-xs font-bold tracking-tight text-gray-800 uppercase">Notifications Récentes</h3>
             </div>
-            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{stats.unreadNotifications} non lues</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{stats.unreadNotifications} non lues</span>
+              <span className="text-[10px] font-semibold text-blue-600 hover:underline">Voir tout →</span>
+            </div>
           </div>
           <div className="divide-y divide-gray-50">
             {stats.recentNotifications && stats.recentNotifications.length > 0 ? stats.recentNotifications.map((n) => (
