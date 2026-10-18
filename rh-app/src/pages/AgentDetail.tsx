@@ -13,7 +13,7 @@ import {
     FaDownload, FaCalendarAlt, FaMapMarkerAlt,
     FaPhone, FaEnvelope, FaTransgender, FaRing,
     FaTrash, FaImage, FaGraduationCap, FaEdit,
-    FaHistory
+    FaHistory, FaIdCard
 } from 'react-icons/fa';
 import { format } from 'date-fns';
 import api from '../types/api';
@@ -569,6 +569,7 @@ const handleSaveEtude = async (data: EtudePayload & { id?: number }) => {
                         <h1 className="text-2xl font-bold text-gray-800">{agent.nom} {agent.prenom}</h1>
                     </div>
                     <div className="flex space-x-2">
+                        <Button variant="primary" onClick={() => navigate(`/agents/${agent.id}/fiche`)} icon={<FaIdCard />}>Voir la fiche</Button>
                         <Button variant="outline" onClick={handlePrint} icon={<FaPrint />}>Imprimer la fiche</Button>
                         <Button variant="outline" onClick={() => navigate(`/agents/edit/${agent.id}`)}>Modifier</Button>
                     </div>

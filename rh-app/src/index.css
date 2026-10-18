@@ -40,7 +40,13 @@
 }
 .dark .bg-slate-50,
 .dark .bg-slate-50\/50,
-.dark .bg-gray-50 {
+.dark .bg-gray-50,
+.dark .bg-gray-50\/10,
+.dark .bg-gray-50\/20,
+.dark .bg-gray-50\/40,
+.dark .bg-gray-50\/50,
+.dark .bg-gray-50\/60,
+.dark .bg-gray-50\/70 {
   background-color: #020617; /* slate-950 */
 }
 .dark .bg-slate-100,
@@ -100,7 +106,57 @@
   color: #e2e8f0;
   border-color: #334155;
 }
+.dark option {
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
 .dark input::placeholder,
 .dark textarea::placeholder {
   color: #64748b;
+}
+
+/* Dégradés clairs (en-têtes de sections, fonds de page) → versions sombres.
+   Couvre les arrêts « -50 / -100 » pour éviter le texte clair sur fond clair
+   lorsque le texte gris est éclairci par les surcharges ci-dessus. */
+.dark .from-blue-50,
+.dark .from-indigo-50,
+.dark .from-green-50,
+.dark .from-emerald-50,
+.dark .from-amber-50,
+.dark .from-orange-50,
+.dark .from-purple-50,
+.dark .from-fuchsia-50,
+.dark .from-pink-50,
+.dark .from-rose-50,
+.dark .from-red-50,
+.dark .from-teal-50,
+.dark .from-cyan-50,
+.dark .from-sky-50,
+.dark .from-gray-50,
+.dark .from-gray-100,
+.dark .from-slate-50,
+.dark .from-slate-100 {
+  --tw-gradient-from: #1e293b;
+  --tw-gradient-to: #1e293b;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+.dark .to-blue-50,
+.dark .to-indigo-50,
+.dark .to-green-50,
+.dark .to-emerald-50,
+.dark .to-amber-50,
+.dark .to-orange-50,
+.dark .to-purple-50,
+.dark .to-fuchsia-50,
+.dark .to-pink-50,
+.dark .to-rose-50,
+.dark .to-red-50,
+.dark .to-teal-50,
+.dark .to-cyan-50,
+.dark .to-sky-50,
+.dark .to-gray-50,
+.dark .to-gray-100,
+.dark .to-slate-50,
+.dark .to-slate-100 {
+  --tw-gradient-to: #1e293b;
 }

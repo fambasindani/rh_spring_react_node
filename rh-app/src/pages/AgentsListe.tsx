@@ -12,12 +12,15 @@ import { agentService } from '../services/agents.service';
 import type { Agent } from '../types/agent';
 import { directionService } from '../services/direction.service';
 import type { Direction } from '../services/direction.service';
+import { gradeService } from '../services/grades.service';
+import type { GradeResponse } from '../services/grades.service';
+import SearchableSelect from '../components/SearchableSelect';
 import { useAuth } from '../hooks/useAuth';
 import RapportAgentsListePDF from '../components/pdf/RapportAgentsListePDF';
 import { FaArrowLeft, FaSearch, FaSync, FaFileExcel, FaFilePdf } from 'react-icons/fa';
 
 const AgentsListe: React.FC = () => {
-  const [params] = useSearchParams();
+  const [params, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -25,13 +28,13 @@ const AgentsListe: React.FC = () => {
   const hasDroit = (d: string) => (user?.droits || []).includes(d);
   const canView = isAdmin || hasDroit('VIEW_AGENT_LISTS') || hasDroit('VIEW_AGENTS');
 
-  const title = params.get('title') || 'Liste des agents';
   const sexe = params.get('sexe') || undefined;
-  const gradeId = params.get('gradeId') ? Number(params.get('gradeId')) : undefined;
   const fonctionId = params.get('fonctionId') ? Number(params.get('fonctionId')) : undefined;
   const retraite = params.get('retraite') === 'true';
 
   const [directionId, setDirectionId] = useState<string>(params.get('directionId') || 'all');
+  const [gradeId, setGradeId] = useState<number | null>(params.get('gradeId') ? Number(params.get('gradeId')) : null);
+  const [gradeOptions, setGradeOptions] = useState<{ value: number; label: string }[]>([]);
   const [directions, setDirections] = useState<Direction[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [total, setTotal] = useState(0);
@@ -42,13 +45,47 @@ const AgentsListe: React.FC = () => {
 
   useEffect(() => { directionService.getAll().then(setDirections).catch(() => {}); }, []);
 
+  const loadGradeOptions = useCallback(async (input: string) => {
+    try {
+      const res = await gradeService.search(input || '', 0, 20);
+      const opts = (res.content || []).map((g: GradeResponse) => ({ value: g.id, label: `${g.nom} (${g.sigle})` }));
+      setGradeOptions(prev => {
+        const merged = [...prev];
+        opts.forEach(o => { if (!merged.some(m => m.value === o.value)) merged.push(o); });
+        return merged;
+      });
+      return opts;
+    } catch {
+      return [];
+    }
+  }, []);
+
+  const gradeParam = gradeId ?? undefined;
+
+  const selectedGrade = gradeOptions.find(g => g.value === gradeId);
+  const selectedDirection = directions.find(d => String(d.id) === directionId);
+  const title = selectedGrade
+    ? `Agents — ${selectedGrade.label}`
+    : selectedDirection
+      ? `Agents — ${selectedDirection.sigle} - ${selectedDirection.nom}`
+      : params.get('title') || 'Liste des agents';
+
+  const updateParams = useCallback((updates: Record<string, string | null>) => {
+    const next = new URLSearchParams(params);
+    Object.entries(updates).forEach(([k, v]) => {
+      if (v === null) next.delete(k);
+      else next.set(k, v);
+    });
+    setSearchParams(next, { replace: true });
+  }, [params, setSearchParams]);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const res = await agentService.searchAgents({
         keyword: search || undefined,
         sexe,
-        gradeId,
+        gradeId: gradeParam,
         fonctionId,
         retraite: retraite ? true : undefined,
         directionId: directionId === 'all' ? undefined : Number(directionId),
@@ -62,16 +99,16 @@ const AgentsListe: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [search, sexe, gradeId, fonctionId, retraite, directionId, page, pageSize]);
+  }, [search, sexe, gradeParam, fonctionId, retraite, directionId, page, pageSize]);
 
   useEffect(() => { load(); }, [load]);
-  useEffect(() => { setPage(0); }, [search, directionId]);
+  useEffect(() => { setPage(0); }, [search, directionId, gradeId]);
 
   const fetchAll = async (): Promise<Agent[]> => {
     const res = await agentService.searchAgents({
       keyword: search || undefined,
       sexe,
-      gradeId,
+      gradeId: gradeParam,
       fonctionId,
       retraite: retraite ? true : undefined,
       directionId: directionId === 'all' ? undefined : Number(directionId),
@@ -161,11 +198,21 @@ const AgentsListe: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <select value={directionId} onChange={(e) => setDirectionId(e.target.value)}
+          <select value={directionId} onChange={(e) => { const val = e.target.value; setDirectionId(val); updateParams({ directionId: val === 'all' ? null : val }); }}
             className="px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-slate-800 dark:text-slate-100 max-w-[240px]">
             <option value="all">Toutes les directions</option>
             {directions.map(d => <option key={d.id} value={d.id}>{d.sigle} - {d.nom}</option>)}
           </select>
+          <div className="w-60">
+            <SearchableSelect
+              options={gradeOptions}
+              loadOptions={loadGradeOptions}
+              value={gradeId}
+              onChange={(v) => { setGradeId(v); updateParams({ gradeId: v ? String(v) : null, title: null }); }}
+              placeholder="Tous les grades"
+              containerClassName=""
+            />
+          </div>
           <div className="relative">
             <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
             <input type="text" placeholder="Rechercher un agent..." value={search} onChange={(e) => setSearch(e.target.value)}

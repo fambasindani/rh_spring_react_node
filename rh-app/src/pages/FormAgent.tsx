@@ -561,7 +561,7 @@ const FormAgent: React.FC<FormAgentProps> = ({ initialValues, onSuccess, isOwnPr
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8 relative">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800 py-8 px-4 sm:px-6 lg:px-8 relative">
       {/* Toast notification */}
       {showToast && (
         <div className={`fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg transition-all duration-300 ${
@@ -595,7 +595,7 @@ const FormAgent: React.FC<FormAgentProps> = ({ initialValues, onSuccess, isOwnPr
         <form id="agent-form" onSubmit={handleSubmit} className="space-y-8">
           {/* Informations personnelles */}
           <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800 px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-800 flex items-center">
                 <FaUser className="mr-2 text-blue-600" /> Informations personnelles
               </h3>
@@ -694,7 +694,7 @@ const FormAgent: React.FC<FormAgentProps> = ({ initialValues, onSuccess, isOwnPr
 
           {/* Carrière */}
           <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-200">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800 px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-800 flex items-center">
                 <FaBriefcase className="mr-2 text-green-600" /> Carrière
               </h3>
@@ -751,7 +751,7 @@ const FormAgent: React.FC<FormAgentProps> = ({ initialValues, onSuccess, isOwnPr
 
           {/* Localisation */}
           <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 px-6 py-4 border-b border-gray-200">
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-slate-800 dark:to-slate-800 px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-800 flex items-center">
                 <FaMapMarkerAlt className="mr-2 text-amber-600" /> ORIGINE
               </h3>
@@ -788,7 +788,7 @@ const FormAgent: React.FC<FormAgentProps> = ({ initialValues, onSuccess, isOwnPr
 
           {/* Photo */}
           <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-gradient-to-r from-purple-50 to-fuchsia-50 px-6 py-4 border-b border-gray-200">
+            <div className="bg-gradient-to-r from-purple-50 to-fuchsia-50 dark:from-slate-800 dark:to-slate-800 px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-800 flex items-center">
                 <FaCameraRetro className="mr-2 text-purple-600" /> Photo
               </h3>
@@ -842,7 +842,7 @@ const FormAgent: React.FC<FormAgentProps> = ({ initialValues, onSuccess, isOwnPr
           {/* Affiliations (uniquement en création) */}
           {!isEdit && (
             <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-pink-50 to-rose-50 px-6 py-4 border-b border-gray-200">
+              <div className="bg-gradient-to-r from-pink-50 to-rose-50 dark:from-slate-800 dark:to-slate-800 px-6 py-4 border-b border-gray-200">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center">
                     <FaUsers className="mr-2 text-pink-600" /> Affiliations

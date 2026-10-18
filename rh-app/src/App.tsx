@@ -10,6 +10,7 @@ import AgentsListe from './pages/AgentsListe';
 import Cartes from './pages/Cartes';
 import FormAgent from './pages/FormAgent';
 import AgentDetails from './pages/AgentDetail';
+import FicheAgent from './pages/FicheAgent';
 import AgentEdit from './pages/AgentEdit';
 import Fonctions from './pages/Fonctions';
 import Directions from './pages/Directions';
@@ -56,6 +57,7 @@ function AppContent() {
         <Route path="cartes" element={<Cartes />} />
         <Route path="formagent" element={<FormAgent />} />
         <Route path="agents/:id" element={<AgentDetails />} />
+        <Route path="agents/:id/fiche" element={<FicheAgent />} />
         <Route path="agents/edit/:id" element={<AgentEdit />} />
         <Route path="fonctions" element={<Fonctions />} />
         <Route path="directions" element={<Directions />} />

@@ -352,39 +352,39 @@ const Dashboard: React.FC = () => {
 
       {/* --- BARRE D'ALERTE RAPIDE --- */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="flex items-center space-x-3 bg-amber-50 border border-amber-200/60 rounded-xl p-4">
+        <div className="flex items-center space-x-3 bg-amber-50 dark:bg-amber-500/10 border border-amber-200/60 dark:border-amber-500/20 rounded-xl p-4">
           <ClockIcon className="h-5 w-5 text-amber-500 shrink-0" />
           <div>
-            <p className="text-lg font-black text-amber-700">{stats.pendingConges}</p>
-            <p className="text-[10px] font-bold text-amber-500 uppercase">Congés en attente</p>
+            <p className="text-lg font-black text-amber-700 dark:text-amber-300">{stats.pendingConges}</p>
+            <p className="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase">Congés en attente</p>
           </div>
         </div>
-        <div className="flex items-center space-x-3 bg-rose-50 border border-rose-200/60 rounded-xl p-4">
+        <div className="flex items-center space-x-3 bg-rose-50 dark:bg-rose-500/10 border border-rose-200/60 dark:border-rose-500/20 rounded-xl p-4">
           <ExclamationTriangleIcon className="h-5 w-5 text-rose-500 shrink-0" />
           <div>
-            <p className="text-lg font-black text-rose-700">{stats.todayAbsences}</p>
-            <p className="text-[10px] font-bold text-rose-500 uppercase">Absences aujourd'hui</p>
+            <p className="text-lg font-black text-rose-700 dark:text-rose-300">{stats.todayAbsences}</p>
+            <p className="text-[10px] font-bold text-rose-500 dark:text-rose-400 uppercase">Absences aujourd'hui</p>
           </div>
         </div>
-        <div className="flex items-center space-x-3 bg-emerald-50 border border-emerald-200/60 rounded-xl p-4">
+        <div className="flex items-center space-x-3 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-500/20 rounded-xl p-4">
           <CheckCircleIcon className="h-5 w-5 text-emerald-500 shrink-0" />
           <div>
-            <p className="text-lg font-black text-emerald-700">{stats.todayPresences} <span className="text-xs font-bold text-emerald-500">({stats.todayPresencesRate}%)</span></p>
-            <p className="text-[10px] font-bold text-emerald-500 uppercase">Présents aujourd'hui</p>
+            <p className="text-lg font-black text-emerald-700 dark:text-emerald-300">{stats.todayPresences} <span className="text-xs font-bold text-emerald-500 dark:text-emerald-400">({stats.todayPresencesRate}%)</span></p>
+            <p className="text-[10px] font-bold text-emerald-500 dark:text-emerald-400 uppercase">Présents aujourd'hui</p>
           </div>
         </div>
-        <div className="flex items-center space-x-3 bg-purple-50 border border-purple-200/60 rounded-xl p-4">
+        <div className="flex items-center space-x-3 bg-purple-50 dark:bg-purple-500/10 border border-purple-200/60 dark:border-purple-500/20 rounded-xl p-4">
           <ExclamationTriangleIcon className="h-5 w-5 text-purple-500 shrink-0" />
           <div>
-            <p className="text-lg font-black text-purple-700">{stats.totalSanctions}</p>
-            <p className="text-[10px] font-bold text-purple-500 uppercase">Sanctions totales</p>
+            <p className="text-lg font-black text-purple-700 dark:text-purple-300">{stats.totalSanctions}</p>
+            <p className="text-[10px] font-bold text-purple-500 dark:text-purple-400 uppercase">Sanctions totales</p>
           </div>
         </div>
-        <div className="flex items-center space-x-3 bg-blue-50 border border-blue-200/60 rounded-xl p-4">
+        <div className="flex items-center space-x-3 bg-blue-50 dark:bg-blue-500/10 border border-blue-200/60 dark:border-blue-500/20 rounded-xl p-4">
           <BellIcon className="h-5 w-5 text-blue-500 shrink-0" />
           <div>
-            <p className="text-lg font-black text-blue-700">{stats.unreadNotifications}</p>
-            <p className="text-[10px] font-bold text-blue-500 uppercase">Notifications non lues</p>
+            <p className="text-lg font-black text-blue-700 dark:text-blue-300">{stats.unreadNotifications}</p>
+            <p className="text-[10px] font-bold text-blue-500 dark:text-blue-400 uppercase">Notifications non lues</p>
           </div>
         </div>
       </motion.div>
