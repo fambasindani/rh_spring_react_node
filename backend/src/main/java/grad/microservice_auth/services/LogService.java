@@ -22,10 +22,9 @@ public class LogService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Log> getLogs(String keyword, Pageable pageable) {
-        if (keyword != null && !keyword.isEmpty()) {
-            return logRepository.searchLogs(keyword, pageable);
-        }
-        return logRepository.findAll(pageable);
+    public Page<Log> getLogs(String keyword, String action, Pageable pageable) {
+        String kw = (keyword != null && !keyword.isBlank()) ? keyword : null;
+        String act = (action != null && !action.isBlank()) ? action : null;
+        return logRepository.searchLogs(kw, act, pageable);
     }
 }

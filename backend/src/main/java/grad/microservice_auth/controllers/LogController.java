@@ -22,10 +22,11 @@ public class LogController {
     @GetMapping
     public ResponseEntity<PageResponse<LogResponse>> getLogs(
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String action,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<Log> logPage = logService.getLogs(keyword, pageable);
+        Page<Log> logPage = logService.getLogs(keyword, action, pageable);
         Page<LogResponse> response = logPage.map(this::toResponse);
         return ResponseEntity.ok(new PageResponse<>(
                 response.getContent(),

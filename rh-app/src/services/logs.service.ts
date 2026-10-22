@@ -2,20 +2,20 @@ import api from '../types/api';
 import type { LogResponse, LogListResponse } from '../types/log';
 
 export const logsService = {
-  getLogs: async (params: { page?: number; size?: number; keyword?: string }): Promise<LogListResponse> => {
+  getLogs: async (params: { page?: number; size?: number; keyword?: string; action?: string }): Promise<LogListResponse> => {
     const page = params.page ?? 0;
     const size = params.size ?? 10;
     const response = await api.get('/admin/logs', { params: { ...params, page: page + 1, per_page: size } });
     const d = response.data;
     const content = (d.data || []).map((item: any): LogResponse => ({
       id: item.id,
-      userId: item.user?.id ?? item.user_id ?? null,
+      userId: item.user?.id ?? item.userId ?? item.user_id ?? null,
       username: item.user?.username ?? item.username ?? '-',
       action: item.action ?? '',
       description: item.description ?? '',
-      ipAddress: item.ip_address ?? '',
-      userAgent: item.user_agent ?? '',
-      createdAt: item.created_at ?? '',
+      ipAddress: item.ipAddress ?? item.ip_address ?? '',
+      userAgent: item.userAgent ?? item.user_agent ?? '',
+      createdAt: item.createdAt ?? item.created_at ?? '',
     }));
     return {
       content,

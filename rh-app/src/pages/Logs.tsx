@@ -41,7 +41,7 @@ const Logs: React.FC = () => {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [goToPageInput, setGoToPageInput] = useState('');
 
-  const allActions = Array.from(new Set(logs.map(l => l.action))).sort();
+  const allActions = Array.from(new Set([...Object.keys(ACTION_CONFIG), ...logs.map(l => l.action)])).sort();
 
   const loginCount = logs.filter(l => l.action === 'LOGIN').length;
   const failedCount = logs.filter(l => l.action === 'LOGIN_FAILED').length;
@@ -61,13 +61,9 @@ const Logs: React.FC = () => {
         page: pageNum,
         size: pageSize,
         keyword: keyword || undefined,
+        action: filterAction || undefined,
       });
-      let data = (response.content || []).map((log) => ({
-        ...log,
-      }));
-      if (filterAction) {
-        data = data.filter(l => l.action === filterAction);
-      }
+      const data = response.content || [];
       setLogs(data);
       setTotalElements(response.totalElements || 0);
       setTotalPages(response.totalPages || 0);
@@ -80,8 +76,9 @@ const Logs: React.FC = () => {
   };
 
   useEffect(() => {
+    setPage(0);
     fetchLogs(0);
-  }, [debouncedSearch, pageSize]);
+  }, [debouncedSearch, pageSize, filterAction]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 0 && newPage < totalPages) {
@@ -90,8 +87,11 @@ const Logs: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('fr-FR', {
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '—';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '—';
+    return date.toLocaleString('fr-FR', {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit', second: '2-digit',
     });

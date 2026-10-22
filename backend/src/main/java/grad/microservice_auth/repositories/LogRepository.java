@@ -12,6 +12,7 @@ public interface LogRepository extends JpaRepository<Log, Long> {
     @Query("SELECT l FROM Log l WHERE " +
             "(:keyword IS NULL OR LOWER(l.action) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(l.description) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(l.ipAddress) LIKE LOWER(CONCAT('%', :keyword, '%')))")
-    Page<Log> searchLogs(@Param("keyword") String keyword, Pageable pageable);
+            "LOWER(l.ipAddress) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+            "AND (:action IS NULL OR l.action = :action)")
+    Page<Log> searchLogs(@Param("keyword") String keyword, @Param("action") String action, Pageable pageable);
 }

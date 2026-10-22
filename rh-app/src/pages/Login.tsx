@@ -74,8 +74,8 @@ const Login: React.FC = () => {
         {/* ───────── Panneau gauche (marque) ───────── */}
         <div className="hidden lg:flex lg:w-1/2 h-full bg-gradient-to-b from-[#1E3A8A] to-[#081b33] p-10 xl:p-16 flex-col justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-lg">
-              <img src={logo} alt="DGRAD" className="w-full h-full object-contain" />
+            <div className="w-12 h-12 rounded-xl bg-white !bg-white p-1.5 flex items-center justify-center shadow-lg ring-1 ring-black/5 overflow-hidden">
+              <img src={logo} alt="DGRAD" className="w-full h-full object-contain rounded-lg" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-white leading-none">GS-RH</h1>
@@ -130,15 +130,15 @@ const Login: React.FC = () => {
         </div>
 
         {/* ───────── Panneau droit (formulaire) ───────── */}
-        <div className="w-full lg:w-1/2 h-full bg-[#dae2ec] p-6 md:p-12 flex flex-col justify-center items-center relative">
+        <div className="w-full lg:w-1/2 h-full bg-[#dae2ec] dark:bg-slate-950 p-6 md:p-12 flex flex-col justify-center items-center relative">
           <div className="absolute top-4 right-4 z-10">
             <LanguageSwitcher />
           </div>
 
           {/* Logo mobile */}
           <div className="flex lg:hidden items-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-xl bg-[#1E3A8A] p-1.5 flex items-center justify-center">
-              <img src={logo} alt="DGRAD" className="w-full h-full object-contain" />
+            <div className="w-12 h-12 rounded-xl bg-white !bg-white p-1.5 flex items-center justify-center shadow ring-1 ring-black/5 overflow-hidden">
+              <img src={logo} alt="DGRAD" className="w-full h-full object-contain rounded-lg" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-gray-800 leading-none">GS-RH</h1>
